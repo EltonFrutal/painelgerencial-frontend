@@ -1,7 +1,10 @@
+// src/pages/api/auth/[...nextauth].ts
+
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { NextAuthOptions } from 'next-auth';
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -27,17 +30,21 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
+      if (user && typeof user === 'object') {
         token.name = user.name;
+        // @ts-ignore
         token.username = user.username;
+        // @ts-ignore
         token.organization = user.organization;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user.name = token.name as string;
+        // @ts-ignore
         session.user.username = token.username as string;
+        // @ts-ignore
         session.user.organization = token.organization as string;
       }
       return session;
@@ -47,6 +54,7 @@ const handler = NextAuth({
     signIn: '/login',
   },
   secret: process.env.NEXTAUTH_SECRET || 'pgwebia-secret',
-});
+};
 
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
