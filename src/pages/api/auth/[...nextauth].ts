@@ -32,9 +32,9 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user && typeof user === 'object') {
         token.name = user.name;
-        // @ts-ignore
+        // @ts-expect-error
         token.username = user.username;
-        // @ts-ignore
+        // @ts-expect-error
         token.organization = user.organization;
       }
       return token;
@@ -42,9 +42,9 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.name = token.name as string;
-        // @ts-ignore
+        // @ts-expect-error
         session.user.username = token.username as string;
-        // @ts-ignore
+        // @ts-expect-error
         session.user.organization = token.organization as string;
       }
       return session;
