@@ -32,9 +32,9 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user && typeof user === 'object') {
         token.name = user.name;
-        // @ts-expect-error
+        // @ts-expect-error: username not declared in User type
         token.username = user.username;
-        // @ts-expect-error
+        // @ts-expect-error: organization not declared in User type
         token.organization = user.organization;
       }
       return token;
@@ -42,9 +42,9 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.name = token.name as string;
-        // @ts-expect-error
+        // @ts-expect-error: username not declared in User type
         session.user.username = token.username as string;
-        // @ts-expect-error
+        // @ts-expect-error: organization not declared in User type
         session.user.organization = token.organization as string;
       }
       return session;
