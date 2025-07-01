@@ -1,7 +1,10 @@
 // PGWebIA - MenuPrincipal cards no topo centralizados horizontalmente
 
 import Layout from "@/components/Layout";
-import { DollarSign, Download, Upload, MinusCircle, RotateCcw, Package, ShoppingBag, BarChart, Gauge } from "lucide-react";
+import { 
+    DollarSign, Download, MinusCircle, RotateCcw, 
+    Package, ShoppingBag, BarChart, Gauge 
+} from "lucide-react"; // ✅ Removido Upload
 import { useRouter } from "next/router";
 
 export default function MenuPrincipal() {
@@ -20,7 +23,7 @@ export default function MenuPrincipal() {
 
     return (
         <Layout titulo="Painel Gerencial" subtitulo="Menu Principal">
-            <div className="flex justify-center mt-8"> {/* Apenas topo confortável */}
+            <div className="flex justify-center mt-8">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
                     {cards.map((card, idx) => (
                         <button
@@ -43,4 +46,5 @@ export default function MenuPrincipal() {
         </Layout>
     );
 }
+
 
