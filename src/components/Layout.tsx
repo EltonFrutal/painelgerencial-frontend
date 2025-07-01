@@ -1,4 +1,4 @@
-// PGWebIA - Layout.tsx corrigido sem erro de hydration no Next.js
+// PGWebIA - Layout.tsx corrigido e otimizado
 
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -22,9 +22,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
     const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
-        // Evita hydration failed no Next.js
         setHasMounted(true);
-
         if (typeof window !== "undefined") {
             setUsuario(localStorage.getItem("usuario") || "");
             setOrganizacao(localStorage.getItem("organizacao") || "");
@@ -33,7 +31,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
     }, []);
 
     if (!hasMounted) {
-        return null; // Evita render antes de montar
+        return null;
     }
 
     const handleLogout = () => {
@@ -58,7 +56,6 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
 
             {/* Menu lateral fixo - escondido em MOBILE */}
             <aside className="hidden md:flex w-20 bg-gradient-to-b from-blue-700 to-blue-500 text-white flex-col items-center py-4 space-y-1">
-                {/* <img src="/images/Logo.png" alt="Logo" className="w-10 h-10 mb-2" /> */}
                 {menuItems.map((item, idx) => (
                     <button
                         key={idx}
@@ -89,19 +86,16 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                 {/* Cabeçalho responsivo */}
                 <header className="bg-white shadow p-3 flex flex-col md:flex-row md:justify-between md:items-center border-b">
 
-                    {/* MOBILE: Home, Logo, Título centralizado */}
+                    {/* MOBILE */}
                     <div className="flex flex-col md:hidden w-full">
                         <div className="flex items-center justify-between w-full">
-                            {/* Botão Home */}
                             <button onClick={() => router.push("/menu-principal")}>
                                 <Home size={28} className="text-blue-700" />
                             </button>
-                            {/* Logo + Título */}
                             <div className="flex flex-1 justify-center items-center gap-2">
                                 <img src="/images/Logo.png" alt="Logo" className="w-6 h-6" />
                                 <h1 className="text-lg font-bold text-blue-900">{titulo}</h1>
                             </div>
-                            {/* Botão Logout */}
                             <button
                                 onClick={handleLogout}
                                 className="p-1 rounded bg-red-500 hover:bg-red-600 transition"
@@ -110,26 +104,24 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                                 <LogOut size={20} className="text-white" />
                             </button>
                         </div>
-                        {/* Usuário e Organização abaixo */}
                         <div className="mt-1 text-xs text-gray-700 text-center">
                             {usuario} | {organizacao}{idorganizacao ? ` - ${idorganizacao}` : ""}
                         </div>
                     </div>
 
-                    {/* DESKTOP: Título e Subtítulo */}
+                    {/* DESKTOP */}
                     <div className="hidden md:block">
                         <div className="flex items-center gap-2">
-    			<img 
-        			src="/images/Logo.png" 
-        			alt="Logo PGWebIA" 
-        			className="w-8 h-8 hidden md:block" 
-    				/>
-    				<h1 className="text-xl font-bold">{titulo}</h1>
-<			/div>
+                            <img
+                                src="/images/Logo.png"
+                                alt="Logo PGWebIA"
+                                className="w-8 h-8 hidden md:block"
+                            />
+                            <h1 className="text-xl font-bold">{titulo}</h1>
+                        </div>
                         <h2 className="text-sm text-gray-500 md:pl-10">{subtitulo}</h2>
                     </div>
 
-                    {/* DESKTOP: Usuário e Organização detalhados */}
                     <div className="hidden md:flex flex-col text-sm text-gray-700 text-right">
                         <div className="flex items-center justify-end gap-1">
                             <User size={14} />
@@ -150,4 +142,5 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
         </div>
     );
 }
+
 
