@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', // <-- ajuste para a porta 3001
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
 });
 
 // Adiciona automaticamente o token JWT salvo no localStorage em cada requisição
