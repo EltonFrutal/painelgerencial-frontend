@@ -1,6 +1,8 @@
+// src/pages/login.tsx
+
 import { useState } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
+import api from "@/lib/api"; // ✅ Alterado de axios para api centralizado
 import { Building, User, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
@@ -12,29 +14,30 @@ export default function Login() {
     const router = useRouter();
 
     const handleLogin = async () => {
-    try {
-        const endpoint = isUsuario ? "/auth/login/usuario" : "/auth/login/assessor";
-        const payload = isUsuario
-            ? { idorganizacao: Number(idOrganizacao), usuario, senha }
-            : { usuario, senha };
+        try {
+            const endpoint = "/auth/login"; 
 
-        const response = await axios.post(`http://localhost:3001${endpoint}`, payload);
-        const { token, usuario: nomeUsuario, organizacao, idorganizacao } = response.data;
-	console.log("LOGIN RESPONSE", response.data);
+            const payload = isUsuario
+                ? { idorganizacao: Number(idOrganizacao), usuario, senha }
+                : { usuario, senha };
 
-        localStorage.setItem("token", token);
-	localStorage.setItem("usuario", nomeUsuario);
-	localStorage.setItem("organizacao", organizacao); // PEGA DIRETO, JÁ É STRING
-	localStorage.setItem("idorganizacao", String(idorganizacao)); // PEGA DIRETO E CONVERTE PARA STRING
+            // ✅ Agora usando api centralizado
+            const response = await api.post(endpoint, payload);
 
+            const { token, usuario: nomeUsuario, organizacao, idorganizacao } = response.data;
+            console.log("LOGIN RESPONSE", response.data);
 
-        router.push("/menu-principal");
-    } catch (error) {
-        console.error(error);
-        alert("Erro ao fazer login. Verifique suas credenciais.");
-    }
-};
+            localStorage.setItem("token", token);
+            localStorage.setItem("usuario", nomeUsuario);
+            localStorage.setItem("organizacao", organizacao);
+            localStorage.setItem("idorganizacao", String(idorganizacao));
 
+            router.push("/menu-principal");
+        } catch (error) {
+            console.error("Erro no login:", error);
+            alert("Erro ao fazer login. Verifique suas credenciais.");
+        }
+    };
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -50,7 +53,6 @@ export default function Login() {
                 </div>
                 <h2 className="text-center text-lg font-bold mb-4">Login de {isUsuario ? "Usuário" : "Assessor"}</h2>
 
-                {/* idOrganizacao */}
                 {isUsuario && (
                     <div className="relative mb-3">
                         <Building className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -64,7 +66,6 @@ export default function Login() {
                     </div>
                 )}
 
-                {/* usuario */}
                 <div className="relative mb-3">
                     <User className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
@@ -76,7 +77,6 @@ export default function Login() {
                     />
                 </div>
 
-                {/* senha */}
                 <div className="relative mb-4">
                     <Lock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
