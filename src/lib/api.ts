@@ -2,10 +2,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-// Adiciona automaticamente o token JWT salvo no localStorage em cada requisição
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
@@ -17,3 +16,5 @@ api.interceptors.request.use((config) => {
 });
 
 export default api;
+
+
