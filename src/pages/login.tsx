@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/router";
-import api from "@/lib/api"; // ✅ Alterado de axios para api centralizado
+import api from "@/lib/api"; // ✅ Usa api centralizado
 import { Building, User, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
@@ -15,13 +15,12 @@ export default function Login() {
 
     const handleLogin = async () => {
         try {
-            const endpoint = "/auth/login"; 
+            const endpoint = "/login"; // ✅ Ajustado: evita /auth/auth/login
 
             const payload = isUsuario
                 ? { idorganizacao: Number(idOrganizacao), usuario, senha }
                 : { usuario, senha };
 
-            // ✅ Agora usando api centralizado
             const response = await api.post(endpoint, payload);
 
             const { token, usuario: nomeUsuario, organizacao, idorganizacao } = response.data;
@@ -47,11 +46,25 @@ export default function Login() {
                         <User size={32} className="text-white" />
                     </div>
                 </div>
+
                 <div className="flex mb-4 border rounded-full overflow-hidden">
-                    <button onClick={() => setIsUsuario(true)} className={`flex-1 py-2 ${isUsuario ? "bg-blue-500 text-white" : "bg-gray-200"}`}>Usuário</button>
-                    <button onClick={() => setIsUsuario(false)} className={`flex-1 py-2 ${!isUsuario ? "bg-blue-500 text-white" : "bg-gray-200"}`}>Assessor</button>
+                    <button
+                        onClick={() => setIsUsuario(true)}
+                        className={`flex-1 py-2 ${isUsuario ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    >
+                        Usuário
+                    </button>
+                    <button
+                        onClick={() => setIsUsuario(false)}
+                        className={`flex-1 py-2 ${!isUsuario ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    >
+                        Assessor
+                    </button>
                 </div>
-                <h2 className="text-center text-lg font-bold mb-4">Login de {isUsuario ? "Usuário" : "Assessor"}</h2>
+
+                <h2 className="text-center text-lg font-bold mb-4">
+                    Login de {isUsuario ? "Usuário" : "Assessor"}
+                </h2>
 
                 {isUsuario && (
                     <div className="relative mb-3">
