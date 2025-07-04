@@ -35,6 +35,7 @@ export default function LoginAssessor() {
 
             setOrganizacoes(organizacoes);
         } catch (err) {
+            console.error("Erro no login-assessor:", err);
             setError("Assessor ou senha inválidos.");
         } finally {
             setLoading(false);
@@ -172,3 +173,4 @@ export default function LoginAssessor() {
         </div>
     );
 }
+

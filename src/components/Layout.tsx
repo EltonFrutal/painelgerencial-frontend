@@ -1,7 +1,8 @@
-// PGWebIA - Layout.tsx ajustado com troca de organização
+// PGWebIA - Layout.tsx (corrigido com next/image e organização dinâmica)
 
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import {
     Home, DollarSign, Download, MinusCircle, RotateCcw,
     Package, ShoppingBag, BarChart, Gauge, LogOut, User, Building, ShieldCheck
@@ -51,7 +52,6 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                 setTipoPerfil("Usuário");
             }
 
-            // Carrega lista de organizações caso seja assessor
             if (idassessor) {
                 const orgsStorage = localStorage.getItem("organizacoes_assessor");
                 if (orgsStorage) {
@@ -73,19 +73,17 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
     };
 
     const handleChangeOrg = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = e.target.value;
-    const org = organizacoesAssessor.find((o) => String(o.idorganizacao) === id);
-    if (org) {
-        localStorage.setItem("idorganizacao", String(org.idorganizacao));
-        localStorage.setItem("nome_organizacao", org.nomeorganizacao);
-        setNomeOrganizacao(org.nomeorganizacao);
-        setIdOrganizacao(String(org.idorganizacao));
-        setIsSelectingOrg(false);
-
-        // 🔄 Força reload da página atual para buscar os dados com o novo idorganizacao
-        router.reload();
-    }
-};
+        const id = e.target.value;
+        const org = organizacoesAssessor.find((o) => String(o.idorganizacao) === id);
+        if (org) {
+            localStorage.setItem("idorganizacao", String(org.idorganizacao));
+            localStorage.setItem("nome_organizacao", org.nomeorganizacao);
+            setNomeOrganizacao(org.nomeorganizacao);
+            setIdOrganizacao(String(org.idorganizacao));
+            setIsSelectingOrg(false);
+            router.reload(); // recarrega a página atual para refletir dados atualizados
+        }
+    };
 
     const menuItems = [
         { icon: <Home size={24} />, route: "/menu-principal", label: "Menu" },
@@ -101,7 +99,6 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
 
     return (
         <div className="flex min-h-screen">
-
             {/* Menu lateral fixo */}
             <aside className="hidden md:flex w-20 bg-gradient-to-b from-blue-700 to-blue-500 text-white flex-col items-center py-4 space-y-1">
                 {menuItems.map((item, idx) => (
@@ -128,7 +125,6 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
 
             {/* Área principal */}
             <div className="flex-1 flex flex-col">
-
                 {/* Cabeçalho */}
                 <header className="bg-white shadow p-3 flex flex-col md:flex-row md:justify-between md:items-center border-b">
 
@@ -139,7 +135,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                                 <Home size={28} className="text-blue-700" />
                             </button>
                             <div className="flex flex-1 justify-center items-center gap-2">
-                                <img src="/images/Logo.png" alt="Logo" className="w-6 h-6" />
+                                <Image src="/images/Logo.png" alt="Logo" width={24} height={24} className="w-6 h-6" />
                                 <h1 className="text-lg font-bold text-blue-900">{titulo}</h1>
                             </div>
                             <button
@@ -158,7 +154,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                     {/* DESKTOP */}
                     <div className="hidden md:block">
                         <div className="flex items-center gap-2">
-                            <img src="/images/Logo.png" alt="Logo PGWebIA" className="w-8 h-8 hidden md:block" />
+                            <Image src="/images/Logo.png" alt="Logo PGWebIA" width={32} height={32} className="w-8 h-8 hidden md:block" />
                             <h1 className="text-xl font-bold">{titulo}</h1>
                         </div>
                         <h2 className="text-sm text-gray-500 md:pl-10">{subtitulo}</h2>
@@ -210,4 +206,3 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
         </div>
     );
 }
-
