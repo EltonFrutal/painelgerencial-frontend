@@ -47,8 +47,8 @@ export default function Vendas() {
         fetchData("ano");
     }, []);
 
-    const handleBarClick = (entry: any) => {
-        const { label } = entry.payload;
+    const handleBarClick = (entry: VendaData) => {
+        const { label } = entry;
         if (nivel === "ano") {
             setAnoSelecionado(label);
             setNivel("mes");
@@ -104,7 +104,7 @@ export default function Vendas() {
                                 dataKey="total"
                                 fill="#2563eb"
                                 radius={[4, 4, 0, 0]}
-                                onClick={(data) => handleBarClick(data)}
+                                onClick={(data) => handleBarClick(data.payload)}
                             >
                                 <LabelList
                                     dataKey="total"
