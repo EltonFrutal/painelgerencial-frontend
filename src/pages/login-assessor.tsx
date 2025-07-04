@@ -1,3 +1,4 @@
+// ✅ Ajustado em 04/07/2025 por Elton via ChatGPT
 // src/pages/login-assessor.tsx
 
 import { useState } from "react";
@@ -171,4 +172,3 @@ export default function LoginAssessor() {
         </div>
     );
 }
-
