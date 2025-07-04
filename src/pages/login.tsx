@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/router";
-import api from "@/lib/api"; // ✅ usando api centralizado
+import api from "@/lib/api";
 import { Building, User, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
-    const [isUsuario, setIsUsuario] = useState(true);
     const [idOrganizacao, setIdOrganizacao] = useState("");
     const [usuario, setUsuario] = useState("");
     const [senha, setSenha] = useState("");
@@ -14,22 +13,24 @@ export default function Login() {
     const router = useRouter();
 
     const handleLogin = async () => {
+        if (!idOrganizacao || !usuario || !senha) {
+            alert("Preencha todos os campos antes de entrar.");
+            return;
+        }
+
         try {
-            const endpoint = "/auth/login"; // ✅ correto
+            const payload = { idorganizacao: Number(idOrganizacao), usuario, senha };
 
-            const payload = isUsuario
-                ? { idorganizacao: Number(idOrganizacao), usuario, senha }
-                : { usuario, senha };
+            const response = await api.post("/auth/login", payload);
 
-            const response = await api.post(endpoint, payload);
-
-            const { token, usuario: nomeUsuario, organizacao, idorganizacao } = response.data;
-            console.log("LOGIN RESPONSE", response.data);
+            const { token, usuario: nomeUsuario, idusuario, organizacao, idorganizacao } = response.data;
 
             localStorage.setItem("token", token);
-            localStorage.setItem("usuario", nomeUsuario);
-            localStorage.setItem("organizacao", organizacao);
-            localStorage.setItem("idorganizacao", String(idorganizacao));
+	    localStorage.setItem("nome", nomeUsuario);
+	    localStorage.setItem("idusuario", String(idusuario)); // opcional para gráficos
+	    localStorage.setItem("idorganizacao", String(idorganizacao));
+	    localStorage.setItem("nome_organizacao", organizacao); // ⚠️ ALTERAÇÃO AQUI
+
 
             router.push("/menu-principal");
         } catch (error) {
@@ -46,24 +47,31 @@ export default function Login() {
                         <User size={32} className="text-white" />
                     </div>
                 </div>
-                <div className="flex mb-4 border rounded-full overflow-hidden">
-                    <button onClick={() => setIsUsuario(true)} className={`flex-1 py-2 ${isUsuario ? "bg-blue-500 text-white" : "bg-gray-200"}`}>Usuário</button>
-                    <button onClick={() => setIsUsuario(false)} className={`flex-1 py-2 ${!isUsuario ? "bg-blue-500 text-white" : "bg-gray-200"}`}>Assessor</button>
-                </div>
-                <h2 className="text-center text-lg font-bold mb-4">Login de {isUsuario ? "Usuário" : "Assessor"}</h2>
 
-                {isUsuario && (
-                    <div className="relative mb-3">
-                        <Building className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                        <input
-                            type="text"
-                            placeholder="idOrganizacao"
-                            value={idOrganizacao}
-                            onChange={(e) => setIdOrganizacao(e.target.value)}
-                            className="w-full pl-8 p-2 border rounded"
-                        />
-                    </div>
-                )}
+                <div className="flex mb-4 border rounded-full overflow-hidden">
+                    <button className="flex-1 py-2 bg-blue-500 text-white">
+                        Usuário
+                    </button>
+                    <button
+                        onClick={() => router.push("/login-assessor")}
+                        className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 transition"
+                    >
+                        Assessor
+                    </button>
+                </div>
+
+                <h2 className="text-center text-lg font-bold mb-4">Login de Usuário</h2>
+
+                <div className="relative mb-3">
+                    <Building className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <input
+                        type="text"
+                        placeholder="ID Organização"
+                        value={idOrganizacao}
+                        onChange={(e) => setIdOrganizacao(e.target.value)}
+                        className="w-full pl-8 p-2 border rounded"
+                    />
+                </div>
 
                 <div className="relative mb-3">
                     <User className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
