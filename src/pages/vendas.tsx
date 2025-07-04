@@ -111,10 +111,10 @@ export default function Vendas() {
                                 }}
                             >
                                 <LabelList
-                                    dataKey="total"
-                                    position="top"
-                                    formatter={(value: number) => formatNumberShort(value)}
-                                    style={{ fontSize: 12 }}
+    				    dataKey="total"
+    				    position="top"
+    				    formatter={(label) => formatNumberShort(Number(label))}
+    				    style={{ fontSize: 12 }}
                                 />
                             </Bar>
                         </BarChart>
