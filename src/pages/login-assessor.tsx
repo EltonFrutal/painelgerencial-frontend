@@ -34,8 +34,7 @@ export default function LoginAssessor() {
             localStorage.setItem("organizacoes_assessor", JSON.stringify(organizacoes));
 
             setOrganizacoes(organizacoes);
-        } catch (err) {
-            console.error("Erro no login-assessor:", err);
+        } catch {
             setError("Assessor ou senha inválidos.");
         } finally {
             setLoading(false);
@@ -69,8 +68,7 @@ export default function LoginAssessor() {
             localStorage.setItem("nome_organizacao", orgSelecionada.nomeorganizacao);
 
             router.push("/menu-principal");
-        } catch (error) {
-            console.error("Erro ao definir organização:", error);
+        } catch {
             alert("Erro ao confirmar a organização. Tente novamente.");
         }
     };
