@@ -47,15 +47,16 @@ export default function Vendas() {
         fetchData("ano");
     }, []);
 
-    const handleBarClick = (entry: VendaData) => {
+    const handleBarClick = (entry: { payload: VendaData }) => {
+        const { label } = entry.payload;
         if (nivel === "ano") {
-            setAnoSelecionado(entry.label);
+            setAnoSelecionado(label);
             setNivel("mes");
-            fetchData("mes", entry.label);
+            fetchData("mes", label);
         } else if (nivel === "mes") {
-            setMesSelecionado(entry.label);
+            setMesSelecionado(label);
             setNivel("dia");
-            fetchData("dia", anoSelecionado!, entry.label);
+            fetchData("dia", anoSelecionado!, label);
         }
     };
 
@@ -95,32 +96,24 @@ export default function Vendas() {
                     <h2 className="text-center text-lg font-semibold mb-4">{titulo}</h2>
 
                     <ResponsiveContainer width="100%" height="85%">
-                        <BarChart
-    data={data}
-    barSize={30}
-    barGap={10}
->
-    <XAxis
-        dataKey="label"
-        tick={{ fontSize: 12 }}
-    />
-    <YAxis hide />
-    <Tooltip formatter={(value: number) => formatNumberShort(value)} />
-    <Bar
-        dataKey="total"
-        fill="#2563eb"
-        radius={[4, 4, 0, 0]}
-        onClick={(data) => handleBarClick(data)}
-    >
-        <LabelList
-            dataKey="total"
-            position="top"
-            formatter={(value: number) => formatNumberShort(value)}
-            style={{ fontSize: 12 }}
-        />
-    </Bar>
-</BarChart>
-
+                        <BarChart data={data} barSize={30} barGap={10}>
+                            <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+                            <YAxis hide />
+                            <Tooltip formatter={(value: number) => formatNumberShort(value)} />
+                            <Bar
+                                dataKey="total"
+                                fill="#2563eb"
+                                radius={[4, 4, 0, 0]}
+                                onClick={(data) => handleBarClick(data)}
+                            >
+                                <LabelList
+                                    dataKey="total"
+                                    position="top"
+                                    formatter={(value: number) => formatNumberShort(value)}
+                                    style={{ fontSize: 12 }}
+                                />
+                            </Bar>
+                        </BarChart>
                     </ResponsiveContainer>
                 </div>
             </div>
