@@ -47,7 +47,7 @@ export default function Vendas() {
         fetchData("ano");
     }, []);
 
-    const handleBarClick = (entry: { payload: VendaData }) => {
+    const handleBarClick = (entry: any) => {
         const { label } = entry.payload;
         if (nivel === "ano") {
             setAnoSelecionado(label);
