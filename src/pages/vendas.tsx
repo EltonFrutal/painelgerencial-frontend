@@ -1,4 +1,4 @@
-// pages/vendas.tsx
+// pages/vendas.tsx 1814
 
 import { formatNumberShort } from "@/lib/utils";
 import Layout from "@/components/Layout";
@@ -104,7 +104,7 @@ export default function Vendas() {
                                 dataKey="total"
                                 fill="#2563eb"
                                 radius={[4, 4, 0, 0]}
-                                onClick={(data) => handleBarClick(data.payload)}
+                                onClick={(data) => handleBarClick((data as any).payload)}
                             >
                                 <LabelList
                                     dataKey="total"
