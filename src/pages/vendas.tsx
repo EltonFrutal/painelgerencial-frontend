@@ -1,4 +1,4 @@
-// pages/vendas.tsx 1821
+// pages/vendas.tsx
 
 import { formatNumberShort } from "@/lib/utils";
 import Layout from "@/components/Layout";
@@ -18,11 +18,6 @@ import api from "@/lib/api";
 interface VendaData {
     label: string;
     total: number;
-}
-
-// ✅ Tipagem para o onClick do Bar sem usar `any`
-interface BarClickData {
-    payload: VendaData;
 }
 
 export default function Vendas() {
@@ -109,7 +104,9 @@ export default function Vendas() {
                                 dataKey="total"
                                 fill="#2563eb"
                                 radius={[4, 4, 0, 0]}
-                                onClick={(data: BarClickData) => handleBarClick(data.payload)}
+                                onClick={(data: { payload: VendaData }) =>
+                                    handleBarClick(data.payload)
+                                }
                             >
                                 <LabelList
                                     dataKey="total"
