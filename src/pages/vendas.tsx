@@ -104,9 +104,11 @@ export default function Vendas() {
                                 dataKey="total"
                                 fill="#2563eb"
                                 radius={[4, 4, 0, 0]}
-                                onClick={(data: { payload: VendaData }) =>
-                                    handleBarClick(data.payload)
-                                }
+                                onClick={(data) => {
+                                    if ('payload' in data) {
+                                        handleBarClick((data as { payload: VendaData }).payload);
+                                    }
+                                }}
                             >
                                 <LabelList
                                     dataKey="total"
