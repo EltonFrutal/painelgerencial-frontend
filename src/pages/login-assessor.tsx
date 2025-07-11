@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import api from "@/lib/api";
-import { User, Building, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Lock, Eye, EyeOff } from "lucide-react";
 
 interface OrganizacaoAssessor {
     idorganizacao: number;
@@ -48,7 +48,6 @@ export default function LoginAssessor() {
         }
 
         const orgSelecionada = organizacoes.find(org => org.idorganizacao === Number(selectedOrg));
-
         if (!orgSelecionada) {
             alert("Organização inválida.");
             return;
@@ -96,7 +95,6 @@ export default function LoginAssessor() {
 
                 <h2 className="text-center text-lg font-bold mb-4">Login de Assessor</h2>
 
-                {/* Campos assessor e senha SEMPRE visíveis */}
                 <div className="relative mb-3">
                     <User className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
@@ -130,7 +128,6 @@ export default function LoginAssessor() {
                     <p className="text-red-500 text-sm mb-2 text-center">{error}</p>
                 )}
 
-                {/* Botão Entrar aparece apenas enquanto organizacoes.length === 0 */}
                 {organizacoes.length === 0 && (
                     <button
                         onClick={handleLogin}
@@ -141,16 +138,14 @@ export default function LoginAssessor() {
                     </button>
                 )}
 
-                {/* Seleção de organização aparece após login válido */}
                 {organizacoes.length > 0 && (
                     <>
                         <h2 className="text-center text-sm mb-2">Selecione a Organização</h2>
-                        <div className="relative mb-4">
-                            <Building className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                        <div className="mb-4">
                             <select
                                 value={selectedOrg}
                                 onChange={(e) => setSelectedOrg(e.target.value)}
-                                className="w-full pl-8 p-2 border rounded"
+                                className="w-full p-2 border rounded"
                             >
                                 <option value="">Selecione...</option>
                                 {organizacoes.map((org) => (
