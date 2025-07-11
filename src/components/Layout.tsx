@@ -99,7 +99,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
 
     return (
         <div className="flex min-h-screen">
-            {/* Menu lateral fixo Desktop */}
+            {/* Sidebar */}
             <aside className="hidden md:flex w-20 bg-gradient-to-b from-blue-700 to-blue-500 text-white flex-col items-center py-4 space-y-1">
                 {menuItems.map((item, idx) => (
                     <button
@@ -123,9 +123,9 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                 </div>
             </aside>
 
-            {/* Área principal */}
+            {/* Main Content */}
             <div className="flex-1 flex flex-col">
-                {/* Cabeçalho Mobile e Desktop Padronizado */}
+                {/* Header */}
                 <header className="bg-white shadow p-3 flex flex-col md:flex-row md:justify-between md:items-center border-b">
                     <div className="flex flex-col w-full">
                         <div className="flex items-center justify-between w-full">
@@ -156,7 +156,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                                         value={idOrganizacao}
                                         onChange={handleChangeOrg}
                                         onBlur={() => setIsSelectingOrg(false)}
-                                        className="border text-xs md:text-sm px-1 py-0.5 rounded"
+                                        className="border text-xs md:text-sm pl-2 pr-6 py-0.5 rounded"
                                     >
                                         {organizacoesAssessor.map((org) => (
                                             <option key={org.idorganizacao} value={org.idorganizacao}>
@@ -170,11 +170,11 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                                         className="text-blue-700 underline text-xs md:text-sm"
                                         title="Trocar Organização"
                                     >
-                                        Organização: {nomeOrganizacao} ({idOrganizacao})
+                                        {nomeOrganizacao} ({idOrganizacao})
                                     </button>
                                 )
                             ) : (
-                                <span>Organização: {nomeOrganizacao} ({idOrganizacao})</span>
+                                <span>{nomeOrganizacao} ({idOrganizacao})</span>
                             )}
                         </div>
                     </div>
@@ -182,7 +182,6 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                     {subtitulo && <h2 className="hidden md:block text-sm text-gray-500 md:pl-10">{subtitulo}</h2>}
                 </header>
 
-                {/* Conteúdo */}
                 <main className="flex-1 p-4 bg-gray-100">
                     {children}
                 </main>
