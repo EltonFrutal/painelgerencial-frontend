@@ -1,4 +1,3 @@
-// ✅ Ajustado em 04/07/2025 por Elton via ChatGPT
 // src/pages/login-assessor.tsx
 
 import { useState } from "react";
@@ -97,51 +96,52 @@ export default function LoginAssessor() {
 
                 <h2 className="text-center text-lg font-bold mb-4">Login de Assessor</h2>
 
-                {organizacoes.length === 0 && (
-                    <>
-                        <div className="relative mb-3">
-                            <User className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Assessor"
-                                value={assessor}
-                                onChange={(e) => setAssessor(e.target.value)}
-                                className="w-full pl-8 p-2 border rounded"
-                            />
-                        </div>
+                {/* Campos assessor e senha SEMPRE visíveis */}
+                <div className="relative mb-3">
+                    <User className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Assessor"
+                        value={assessor}
+                        onChange={(e) => setAssessor(e.target.value)}
+                        className="w-full pl-8 p-2 border rounded"
+                    />
+                </div>
 
-                        <div className="relative mb-4">
-                            <Lock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Senha"
-                                value={senha}
-                                onChange={(e) => setSenha(e.target.value)}
-                                className="w-full pl-8 pr-8 p-2 border rounded"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
-                            >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
-                        </div>
+                <div className="relative mb-4">
+                    <Lock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Senha"
+                        value={senha}
+                        onChange={(e) => setSenha(e.target.value)}
+                        className="w-full pl-8 pr-8 p-2 border rounded"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                </div>
 
-                        {error && (
-                            <p className="text-red-500 text-sm mb-2 text-center">{error}</p>
-                        )}
-
-                        <button
-                            onClick={handleLogin}
-                            disabled={loading}
-                            className="w-full bg-gradient-to-r from-blue-500 to-blue-400 text-white py-2 rounded hover:from-blue-600 hover:to-blue-500 transition"
-                        >
-                            {loading ? "Entrando..." : "Entrar"}
-                        </button>
-                    </>
+                {error && (
+                    <p className="text-red-500 text-sm mb-2 text-center">{error}</p>
                 )}
 
+                {/* Botão Entrar aparece apenas enquanto organizacoes.length === 0 */}
+                {organizacoes.length === 0 && (
+                    <button
+                        onClick={handleLogin}
+                        disabled={loading}
+                        className="w-full bg-gradient-to-r from-blue-500 to-blue-400 text-white py-2 rounded hover:from-blue-600 hover:to-blue-500 transition mb-2"
+                    >
+                        {loading ? "Entrando..." : "Entrar"}
+                    </button>
+                )}
+
+                {/* Seleção de organização aparece após login válido */}
                 {organizacoes.length > 0 && (
                     <>
                         <h2 className="text-center text-sm mb-2">Selecione a Organização</h2>
