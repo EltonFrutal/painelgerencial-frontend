@@ -1,8 +1,18 @@
-/* src/styles/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
   @apply bg-gray-100;
+}
+
+/* Remover borda preta ao clicar em gráficos Recharts */
+.recharts-wrapper:focus,
+.recharts-responsive-container:focus,
+.recharts-surface:focus {
+    outline: none !important;
+}
+
+.recharts-surface > g > rect {
+    stroke: none !important;
 }
