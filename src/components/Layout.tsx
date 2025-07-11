@@ -1,4 +1,4 @@
-// PGWebIA - Layout.tsx (corrigido com next/image e organização dinâmica)
+// src/components/Layout.tsx
 
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -25,7 +25,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
     const [nome, setNome] = useState("");
     const [nomeOrganizacao, setNomeOrganizacao] = useState("");
     const [idOrganizacao, setIdOrganizacao] = useState("");
-    const [tipoPerfil, setTipoPerfil] = useState(""); // Usuário | Assessor | Admin
+    const [tipoPerfil, setTipoPerfil] = useState("");
     const [hasMounted, setHasMounted] = useState(false);
     const [isSelectingOrg, setIsSelectingOrg] = useState(false);
     const [organizacoesAssessor, setOrganizacoesAssessor] = useState<OrganizacaoAssessor[]>([]);
@@ -81,7 +81,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
             setNomeOrganizacao(org.nomeorganizacao);
             setIdOrganizacao(String(org.idorganizacao));
             setIsSelectingOrg(false);
-            router.reload(); // recarrega a página atual para refletir dados atualizados
+            router.reload();
         }
     };
 
@@ -99,7 +99,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
 
     return (
         <div className="flex min-h-screen">
-            {/* Menu lateral fixo */}
+            {/* Menu lateral fixo Desktop */}
             <aside className="hidden md:flex w-20 bg-gradient-to-b from-blue-700 to-blue-500 text-white flex-col items-center py-4 space-y-1">
                 {menuItems.map((item, idx) => (
                     <button
@@ -125,18 +125,16 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
 
             {/* Área principal */}
             <div className="flex-1 flex flex-col">
-                {/* Cabeçalho */}
+                {/* Cabeçalho Mobile e Desktop Padronizado */}
                 <header className="bg-white shadow p-3 flex flex-col md:flex-row md:justify-between md:items-center border-b">
-
-                    {/* MOBILE */}
-                    <div className="flex flex-col md:hidden w-full">
+                    <div className="flex flex-col w-full">
                         <div className="flex items-center justify-between w-full">
                             <button onClick={() => router.push("/menu-principal")}>
                                 <Home size={28} className="text-blue-700" />
                             </button>
                             <div className="flex flex-1 justify-center items-center gap-2">
                                 <Image src="/images/Logo.png" alt="Logo" width={24} height={24} className="w-6 h-6" />
-                                <h1 className="text-lg font-bold text-blue-900">{titulo}</h1>
+                                <h1 className="text-lg md:text-xl font-bold text-blue-900">{titulo}</h1>
                             </div>
                             <button
                                 onClick={handleLogout}
@@ -146,35 +144,19 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                                 <LogOut size={20} className="text-white" />
                             </button>
                         </div>
-                        <div className="mt-1 text-xs text-gray-700 text-center">
-                            {tipoPerfil}: {nome} | Organização: {nomeOrganizacao} ({idOrganizacao})
-                        </div>
-                    </div>
 
-                    {/* DESKTOP */}
-                    <div className="hidden md:block">
-                        <div className="flex items-center gap-2">
-                            <Image src="/images/Logo.png" alt="Logo PGWebIA" width={32} height={32} className="w-8 h-8 hidden md:block" />
-                            <h1 className="text-xl font-bold">{titulo}</h1>
-                        </div>
-                        <h2 className="text-sm text-gray-500 md:pl-10">{subtitulo}</h2>
-                    </div>
-
-                    <div className="hidden md:flex flex-col text-sm text-gray-700 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                            {tipoPerfil === "Admin" && <ShieldCheck size={14} />}
-                            <User size={14} />
-                            <span>{tipoPerfil}: {nome}</span>
-                        </div>
-                        <div className="flex items-center justify-end gap-1">
-                            <Building size={14} />
+                        <div className="mt-1 text-xs md:text-sm text-gray-700 text-center md:flex md:justify-end md:items-center md:gap-2">
+                            {tipoPerfil === "Admin" && <ShieldCheck size={14} className="inline" />}
+                            <User size={14} className="inline" />
+                            <span>{tipoPerfil}: {nome} | </span>
+                            <Building size={14} className="inline" />
                             {tipoPerfil === "Assessor" || tipoPerfil === "Admin" ? (
                                 isSelectingOrg ? (
                                     <select
                                         value={idOrganizacao}
                                         onChange={handleChangeOrg}
                                         onBlur={() => setIsSelectingOrg(false)}
-                                        className="border text-sm px-1 py-0.5 rounded"
+                                        className="border text-xs md:text-sm px-1 py-0.5 rounded"
                                     >
                                         {organizacoesAssessor.map((org) => (
                                             <option key={org.idorganizacao} value={org.idorganizacao}>
@@ -185,7 +167,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                                 ) : (
                                     <button
                                         onClick={() => setIsSelectingOrg(true)}
-                                        className="text-blue-700 underline text-sm"
+                                        className="text-blue-700 underline text-xs md:text-sm"
                                         title="Trocar Organização"
                                     >
                                         Organização: {nomeOrganizacao} ({idOrganizacao})
@@ -196,6 +178,8 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                             )}
                         </div>
                     </div>
+
+                    {subtitulo && <h2 className="hidden md:block text-sm text-gray-500 md:pl-10">{subtitulo}</h2>}
                 </header>
 
                 {/* Conteúdo */}
