@@ -1,6 +1,5 @@
 // pages/vendas.tsx
 
-import { formatNumberShort } from "@/lib/utils";
 import Layout from "@/components/Layout";
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, LabelList, ResponsiveContainer, Rectangle } from "recharts";
