@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Layout from "@/components/Layout";
 import { ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
@@ -28,7 +28,7 @@ export default function Resultados() {
   const meses = Array.from({ length: 12 }, (_, i) => i + 1);
   
   // Função para definir meses padrão baseado no ano
-  const getMesesPadrao = (ano: number) => {
+  const getMesesPadrao = useCallback((ano: number) => {
     if (ano === anoAtual) {
       // Se for o ano atual, seleciona apenas os meses anteriores ao mês atual
       const mesesAnteriores = mesAtual - 1;
@@ -37,7 +37,7 @@ export default function Resultados() {
       // Se for ano anterior, seleciona todos os meses
       return meses;
     }
-  };
+  }, [anoAtual, mesAtual, meses]);
   
   const [mesesSelecionados, setMesesSelecionados] = useState<number[]>(getMesesPadrao(anoAtual));
 
@@ -54,7 +54,7 @@ useEffect(() => {
 // useEffect para atualizar meses selecionados quando o ano mudar
 useEffect(() => {
   setMesesSelecionados(getMesesPadrao(anoSelecionado));
-}, [anoSelecionado]);
+}, [anoSelecionado, getMesesPadrao]);
 
   useEffect(() => {
   async function carregar() {

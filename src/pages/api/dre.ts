@@ -42,6 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     ? `${item.nivel1} | ${item.nivel2}`
                     : item.nivel1;
 
+            if (!key) return; // Skip if key is null or undefined
+
             if (!resultado[key]) {
                 resultado[key] = { total: 0 };
                 for (let i = 1; i <= 12; i++) {
@@ -49,9 +51,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
             }
 
-            if (item.mes >= 1 && item.mes <= 12) {
-                resultado[key][item.mes] += Math.round(item.valorrealizado);
-                resultado[key].total += Math.round(item.valorrealizado);
+            if (item.mes >= 1 && item.mes <= 12 && item.valorrealizado !== null) {
+                const valor = Math.round(Number(item.valorrealizado));
+                resultado[key][item.mes] += valor;
+                resultado[key].total += valor;
             }
         });
 
