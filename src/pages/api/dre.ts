@@ -2,6 +2,14 @@
 
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/lib/prisma";
+import { Decimal } from "@prisma/client/runtime/library";
+
+interface DREData {
+    nivel1: string | null;
+    nivel2: string | null;
+    mes: number;
+    valorrealizado: Decimal | null;
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -36,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Agrupamento e soma dos valores para pivot
         const resultado: { [key: string]: { [mes: number]: number; total: number } } = {};
 
-        dados.forEach((item) => {
+        dados.forEach((item: DREData) => {
             const key =
                 item.nivel1 === "7.0 - DESPESAS" && item.nivel2
                     ? `${item.nivel1} | ${item.nivel2}`

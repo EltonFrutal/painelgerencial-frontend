@@ -13,6 +13,8 @@ interface DREItem {
   valores: { [mes: number]: number; total: number };
 }
 
+const meses = Array.from({ length: 12 }, (_, i) => i + 1);
+
 export default function Resultados() {
   const [dados, setDados] = useState<DREItem[]>([]);
   const [expandidoNivel1, setExpandidoNivel1] = useState<{ [key: string]: boolean }>({});
@@ -25,7 +27,6 @@ export default function Resultados() {
   const [anoSelecionado, setAnoSelecionado] = useState(anoAtual);
   const [modeloSelecionado, setModeloSelecionado] = useState("CMV");
   const mesAtual = new Date().getMonth() + 1;
-  const meses = Array.from({ length: 12 }, (_, i) => i + 1);
   
   // Função para definir meses padrão baseado no ano
   const getMesesPadrao = useCallback((ano: number) => {
@@ -35,9 +36,9 @@ export default function Resultados() {
       return mesesAnteriores > 0 ? Array.from({ length: mesesAnteriores }, (_, i) => i + 1) : [];
     } else {
       // Se for ano anterior, seleciona todos os meses
-      return meses;
+      return Array.from({ length: 12 }, (_, i) => i + 1);
     }
-  }, [anoAtual, mesAtual, meses]);
+  }, [anoAtual, mesAtual]);
   
   const [mesesSelecionados, setMesesSelecionados] = useState<number[]>(getMesesPadrao(anoAtual));
 
@@ -173,7 +174,16 @@ useEffect(() => {
               <th className="text-left px-2 py-1 border-b">DRE - Realizada</th>
               {!isMobile &&
                 meses.map(mes => (
-                  <th key={mes} className="text-right px-2 py-1 border-b w-16">{mes}</th>
+                  <th key={mes} className="text-right px-2 py-1 border-b w-16">
+                    <div className="flex items-center justify-end gap-1">
+                      {anoSelecionado === anoAtual && mes === mesAtual && (
+                        <div className="w-3 h-3 rounded-full border border-black relative overflow-hidden">
+                          <div className="w-1/2 h-full bg-black"></div>
+                        </div>
+                      )}
+                      {mes}
+                    </div>
+                  </th>
                 ))}
               <th className="text-right px-2 py-1 border-b w-20">Total</th>
               <th className="text-right px-2 py-1 border-b w-20">Média</th>
@@ -235,8 +245,8 @@ useEffect(() => {
                       <td className={`px-2 py-1 text-right ${(totaisNivel1.total || 0) < 0 ? "text-red-600" : ""}`}>
                         {(!totaisNivel1.total && totaisNivel1.total !== 0) || isNaN(totaisNivel1.total) || totaisNivel1.total === 0 ? "-" : Math.round(totaisNivel1.total).toLocaleString("pt-BR")}
                       </td>
-                      <td className="px-2 py-1 text-right">{isNaN(media) || media === 0 ? "-" : Math.round(media).toLocaleString("pt-BR")}</td>
-                      <td className={`px-2 py-1 text-right ${parseFloat(varPercent) < 100 ? "text-red-600" : ""}`}>{varPercent}</td>
+                      <td className={`px-2 py-1 text-right ${media < 0 ? "text-red-600" : ""}`}>{isNaN(media) || media === 0 ? "-" : Math.round(media).toLocaleString("pt-BR")}</td>
+                      <td className={`px-2 py-1 text-right ${varPercent !== "-" && parseFloat(varPercent) < 0 ? "text-red-600" : ""}`}>{varPercent}</td>
                     </tr>
 
                     {isDespesas && isOpen && Object.entries(subnivel2)
@@ -281,8 +291,8 @@ useEffect(() => {
                                   </td>
                                 ))}
                               <td className="px-2 py-1 text-right">{isNaN(totalN2.total) || totalN2.total === 0 ? "-" : Math.round(totalN2.total).toLocaleString("pt-BR")}</td>
-                              <td className="px-2 py-1 text-right">{isNaN(mediaN2) || mediaN2 === 0 ? "-" : Math.round(mediaN2).toLocaleString("pt-BR")}</td>
-                              <td className={`px-2 py-1 text-right ${parseFloat(varN2) < 100 ? "text-red-600" : ""}`}>{varN2}</td>
+                              <td className={`px-2 py-1 text-right ${mediaN2 < 0 ? "text-red-600" : ""}`}>{isNaN(mediaN2) || mediaN2 === 0 ? "-" : Math.round(mediaN2).toLocaleString("pt-BR")}</td>
+                              <td className={`px-2 py-1 text-right ${varN2 !== "-" && parseFloat(varN2) < 0 ? "text-red-600" : ""}`}>{varN2}</td>
                             </tr>
 
                             {isOpen2 &&
@@ -306,8 +316,8 @@ useEffect(() => {
                                           return isNaN(total) || total === 0 ? "-" : Math.round(total).toLocaleString("pt-BR");
                                         })()}
                                       </td>
-                                      <td className="px-2 py-1 text-right font-medium">{isNaN(mediaN3) || mediaN3 === 0 ? "-" : Math.round(mediaN3).toLocaleString("pt-BR")}</td>
-                                      <td className={`px-2 py-1 text-right ${parseFloat(varN3) < 100 ? "text-red-600" : ""}`}>{varN3}</td>
+                                      <td className={`px-2 py-1 text-right font-medium ${mediaN3 < 0 ? "text-red-600" : ""}`}>{isNaN(mediaN3) || mediaN3 === 0 ? "-" : Math.round(mediaN3).toLocaleString("pt-BR")}</td>
+                                      <td className={`px-2 py-1 text-right ${varN3 !== "-" && parseFloat(varN3) < 0 ? "text-red-600" : ""}`}>{varN3}</td>
                                     </tr>
                                   );
                                 })}
@@ -344,7 +354,9 @@ useEffect(() => {
                             const media1 = calcularMedia(linha1.valores);
                             const media4 = calcularMedia(linha4.valores);
                             const perc = media1 ? ((media1 - (media4 * -1)) / media1) * 100 : 0;
-                            return media1 === 0 ? "-" : `${perc.toFixed(1)}%`;
+                            const resultado = media1 === 0 ? "-" : `${perc.toFixed(1)}%`;
+                            const isNegativo = perc < 0;
+                            return <span className={isNegativo ? "text-red-600" : ""}>{resultado}</span>;
                           })()}
                         </td>
                         <td className="text-right px-2 py-1">–</td>
