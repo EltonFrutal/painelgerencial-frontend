@@ -33,33 +33,22 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
     useEffect(() => {
         setHasMounted(true);
         if (typeof window !== "undefined") {
-            const nomeStorage = localStorage.getItem("nome") || "";
-            const nomeOrgStorage = localStorage.getItem("nome_organizacao") || "";
-            const idOrgStorage = localStorage.getItem("idorganizacao") || "";
-
-            setNome(nomeStorage);
-            setNomeOrganizacao(nomeOrgStorage);
-            setIdOrganizacao(idOrgStorage);
+            setNome(localStorage.getItem("nome") || "");
+            setNomeOrganizacao(localStorage.getItem("nome_organizacao") || "");
+            setIdOrganizacao(localStorage.getItem("idorganizacao") || "");
 
             const idassessor = localStorage.getItem("idassessor");
             const admin = localStorage.getItem("admin");
 
-            if (idassessor && admin === "true") {
-                setTipoPerfil("Admin");
-            } else if (idassessor) {
-                setTipoPerfil("Assessor");
-            } else {
-                setTipoPerfil("Usuário");
-            }
+            if (idassessor && admin === "true") setTipoPerfil("Admin");
+            else if (idassessor) setTipoPerfil("Assessor");
+            else setTipoPerfil("Usuário");
 
             if (idassessor) {
-                const orgsStorage = localStorage.getItem("organizacoes_assessor");
-                if (orgsStorage) {
-                    try {
-                        setOrganizacoesAssessor(JSON.parse(orgsStorage));
-                    } catch {
-                        setOrganizacoesAssessor([]);
-                    }
+                try {
+                    setOrganizacoesAssessor(JSON.parse(localStorage.getItem("organizacoes_assessor") || "[]"));
+                } catch {
+                    setOrganizacoesAssessor([]);
                 }
             }
         }
@@ -112,7 +101,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                         <span className="text-[10px] mt-1">{item.label}</span>
                     </button>
                 ))}
-                <div className="mt-auto mb-2">
+                {/* <div className="mt-auto mb-2">
                     <button
                         onClick={handleLogout}
                         title="Sair"
@@ -120,66 +109,87 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                     >
                         <LogOut size={24} />
                     </button>
-                </div>
+                </div> */}
             </aside>
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col">
                 {/* Header */}
-                <header className="bg-white shadow p-3 flex flex-col md:flex-row md:justify-between md:items-center border-b">
-                    <div className="flex flex-col w-full">
-                        <div className="flex items-center justify-between w-full">
-                            <button onClick={() => router.push("/menu-principal")}>
-                                <Home size={28} className="text-blue-700" />
-                            </button>
-                            <div className="flex flex-1 justify-center items-center gap-2">
-                                <Image src="/images/Logo.png" alt="Logo" width={24} height={24} className="w-6 h-6" />
-                                <h1 className="text-lg md:text-xl font-bold text-blue-900">{titulo}</h1>
+                <header className="bg-white shadow p-3 flex flex-col md:flex-row md:justify-between md:items-start border-b">
+                    <div className="flex items-center justify-between w-full md:justify-start md:gap-4">
+                        {/* Home Mobile */}
+                        <button onClick={() => router.push("/menu-principal")} className="block md:hidden">
+                            <Home size={28} className="text-blue-700" />
+                        </button>
+
+                        {/* Logo, Título e Subtítulo */}
+                        <div className="flex flex-1 justify-center md:justify-start items-center gap-4">
+                            <Image src="/images/Logo.png" alt="Logo" width={40} height={40} className="w-10 h-10" />
+                            <div className="hidden md:flex flex-col items-start">
+                                <h1 className="text-xl font-bold text-blue-900">{titulo}</h1>
+                                {subtitulo && <h2 className="text-sm text-gray-500">{subtitulo}</h2>}
                             </div>
+                            <h1 className="text-lg font-bold text-blue-900 md:hidden">{titulo}</h1>
+                        </div>
+
+                        {/* Usuário, Organização e Botão Sair lado a lado no Desktop */}
+                        <div className="hidden md:flex flex-row items-center gap-3">
+                            {/* Usuário e Organização */}
+                            <div className="flex flex-col text-sm text-gray-700">
+                                <div className="flex items-center gap-1">
+                                    {tipoPerfil === "Admin" && <ShieldCheck size={14} />}
+                                    <User size={14} />
+                                    <span>{tipoPerfil}: {nome}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <Building size={14} />
+                                    {tipoPerfil === "Assessor" || tipoPerfil === "Admin" ? (
+                                        isSelectingOrg ? (
+                                            <select
+                                                value={idOrganizacao}
+                                                onChange={handleChangeOrg}
+                                                onBlur={() => setIsSelectingOrg(false)}
+                                                className="border text-sm pl-2 pr-6 py-0.5 rounded"
+                                            >
+                                                {organizacoesAssessor.map((org) => (
+                                                    <option key={org.idorganizacao} value={org.idorganizacao}>
+                                                        {org.nomeorganizacao} ({org.idorganizacao})
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <button
+                                                onClick={() => setIsSelectingOrg(true)}
+                                                className="text-blue-700 underline"
+                                            >
+                                                {nomeOrganizacao} ({idOrganizacao})
+                                            </button>
+                                        )
+                                    ) : (
+                                        <span>{nomeOrganizacao} ({idOrganizacao})</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Botão Sair (agora após o bloco de usuário) */}
                             <button
                                 onClick={handleLogout}
-                                className="p-1 rounded bg-red-500 hover:bg-red-600 transition"
+                                className="p-2 rounded bg-red-500 hover:bg-red-600 transition"
                                 title="Sair"
                             >
                                 <LogOut size={20} className="text-white" />
                             </button>
                         </div>
 
-                        <div className="mt-1 text-xs md:text-sm text-gray-700 text-center md:flex md:justify-end md:items-center md:gap-2">
-                            {tipoPerfil === "Admin" && <ShieldCheck size={14} className="inline" />}
-                            <User size={14} className="inline" />
-                            <span>{tipoPerfil}: {nome} | </span>
-                            <Building size={14} className="inline" />
-                            {tipoPerfil === "Assessor" || tipoPerfil === "Admin" ? (
-                                isSelectingOrg ? (
-                                    <select
-                                        value={idOrganizacao}
-                                        onChange={handleChangeOrg}
-                                        onBlur={() => setIsSelectingOrg(false)}
-                                        className="border text-xs md:text-sm pl-2 pr-6 py-0.5 rounded"
-                                    >
-                                        {organizacoesAssessor.map((org) => (
-                                            <option key={org.idorganizacao} value={org.idorganizacao}>
-                                                {org.nomeorganizacao} ({org.idorganizacao})
-                                            </option>
-                                        ))}
-                                    </select>
-                                ) : (
-                                    <button
-                                        onClick={() => setIsSelectingOrg(true)}
-                                        className="text-blue-700 underline text-xs md:text-sm"
-                                        title="Trocar Organização"
-                                    >
-                                        {nomeOrganizacao} ({idOrganizacao})
-                                    </button>
-                                )
-                            ) : (
-                                <span>{nomeOrganizacao} ({idOrganizacao})</span>
-                            )}
-                        </div>
+                        {/* Botão Sair Mobile */}
+                        <button
+                            onClick={handleLogout}
+                            className="p-1 rounded bg-red-500 hover:bg-red-600 transition md:hidden"
+                            title="Sair"
+                        >
+                            <LogOut size={20} className="text-white" />
+                        </button>
                     </div>
-
-                    {subtitulo && <h2 className="hidden md:block text-sm text-gray-500 md:pl-10">{subtitulo}</h2>}
                 </header>
 
                 <main className="flex-1 p-4 bg-gray-100">
@@ -189,3 +199,5 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
         </div>
     );
 }
+
+
