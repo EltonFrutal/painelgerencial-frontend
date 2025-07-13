@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import Layout from "@/components/Layout";
 import { ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import FiltroMesesMobile from "@/components/FiltroMesesMobile";
@@ -66,7 +66,7 @@ useEffect(() => {
         return;
       }
 
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/dre/por-nivel1-e-nivel2-e-nivel3`, {
+      const response = await api.get("/api/dre/por-nivel1-e-nivel2-e-nivel3", {
         params: {
           idorganizacao: Number(idOrganizacao),
           modelo: modeloSelecionado,
