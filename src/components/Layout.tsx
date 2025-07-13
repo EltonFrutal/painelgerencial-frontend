@@ -190,6 +190,43 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                             <LogOut size={20} className="text-white" />
                         </button>
                     </div>
+
+                    {/* Informações de Usuário e Organização Mobile */}
+                    <div className="flex md:hidden justify-center items-center mt-2 text-xs text-gray-600 gap-3">
+                        <div className="flex items-center gap-1">
+                            {tipoPerfil === "Admin" && <ShieldCheck size={12} />}
+                            <User size={12} />
+                            <span>{tipoPerfil}: {nome}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <Building size={12} />
+                            {tipoPerfil === "Assessor" || tipoPerfil === "Admin" ? (
+                                isSelectingOrg ? (
+                                    <select
+                                        value={idOrganizacao}
+                                        onChange={handleChangeOrg}
+                                        onBlur={() => setIsSelectingOrg(false)}
+                                        className="border text-xs pl-1 pr-4 py-0.5 rounded"
+                                    >
+                                        {organizacoesAssessor.map((org) => (
+                                            <option key={org.idorganizacao} value={org.idorganizacao}>
+                                                {org.nomeorganizacao} ({org.idorganizacao})
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <button
+                                        onClick={() => setIsSelectingOrg(true)}
+                                        className="text-blue-700 underline text-xs"
+                                    >
+                                        {nomeOrganizacao} ({idOrganizacao})
+                                    </button>
+                                )
+                            ) : (
+                                <span>{nomeOrganizacao} ({idOrganizacao})</span>
+                            )}
+                        </div>
+                    </div>
                 </header>
 
                 <main className="flex-1 p-4 bg-gray-100">
