@@ -7,18 +7,39 @@ import api from "@/lib/api";
 import { AxiosError } from "axios";
 import { Loader2, AlertTriangle, CreditCard, RefreshCw } from "lucide-react";
 
-// ✅ Mock para teste (substituir por dados reais em produção)
-const contasReceber = [
-  { cliente: "João Silva", vencimento: "2025-07-10", valor: 1200.5, status: "Em aberto" },
-  { cliente: "Maria Souza", vencimento: "2025-07-12", valor: 850.0, status: "Pago" },
-  { cliente: "Empresa XYZ", vencimento: "2025-07-15", valor: 2100.0, status: "Atrasado" },
-];
+interface ContaReceber {
+  cliente: string;
+  vencimento: string;
+  valor: number;
+  status: string;
+}
 
 export default function AReceber() {
+  const [contasReceber, setContasReceber] = useState<ContaReceber[]>([]);
+  const [carregandoContas, setCarregandoContas] = useState(false);
   const [resumoIA, setResumoIA] = useState<string | null>(null);
   const [carregandoIA, setCarregandoIA] = useState(false);
   const [erroIA, setErroIA] = useState<{tipo: string, mensagem: string} | null>(null);
   const resumoRef = useRef<HTMLDivElement | null>(null);
+
+  // Buscar dados reais de contas a receber
+  useEffect(() => {
+    const buscarContasReceber = async () => {
+      try {
+        setCarregandoContas(true);
+        const response = await api.get('/vendas/a-receber');
+        setContasReceber(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar contas a receber:', error);
+        // Manter dados vazios em caso de erro
+        setContasReceber([]);
+      } finally {
+        setCarregandoContas(false);
+      }
+    };
+
+    buscarContasReceber();
+  }, []);
 
   useEffect(() => {
     if (resumoIA && resumoRef.current) {
@@ -27,6 +48,14 @@ export default function AReceber() {
   }, [resumoIA]);
 
   async function gerarResumoIA() {
+    if (contasReceber.length === 0) {
+      setErroIA({
+        tipo: "erro_dados",
+        mensagem: "Nenhuma conta a receber encontrada para análise."
+      });
+      return;
+    }
+
     try {
       setCarregandoIA(true);
       setResumoIA(null);
@@ -98,12 +127,84 @@ export default function AReceber() {
   return (
     <Layout titulo="Painel Gerencial" subtitulo="Chat com IA - A Receber">
       <div className="flex flex-col gap-4 p-6">
+        {/* Tabela de Contas a Receber */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="px-4 py-5 sm:px-6">
+            <h3 className="text-lg leading-6 font-medium text-gray-900">
+              Contas a Receber
+            </h3>
+            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+              Dados reais das contas a receber da sua organização
+            </p>
+          </div>
+          
+          {carregandoContas ? (
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
+              <span className="ml-2 text-gray-600">Carregando contas...</span>
+            </div>
+          ) : contasReceber.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Nenhuma conta a receber encontrada
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Cliente
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Vencimento
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Valor
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {contasReceber.map((conta, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {conta.cliente}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(conta.vencimento).toLocaleDateString('pt-BR')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL'
+                        }).format(conta.valor)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          conta.status === 'Em aberto' ? 'bg-yellow-100 text-yellow-800' :
+                          conta.status === 'Atrasado' ? 'bg-red-100 text-red-800' :
+                          conta.status === 'Vencido' ? 'bg-orange-100 text-orange-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {conta.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
         {/* Botão Gerar Resumo */}
         <div className="flex justify-center">
           <button
             onClick={gerarResumoIA}
             className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-60"
-            disabled={carregandoIA}
+            disabled={carregandoIA || contasReceber.length === 0}
           >
             {carregandoIA && <Loader2 className="animate-spin" size={16} />}
             {carregandoIA ? "Gerando resumo..." : "Gerar Resumo IA"}
