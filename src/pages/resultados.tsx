@@ -60,12 +60,22 @@ useEffect(() => {
   useEffect(() => {
   async function carregar() {
     try {
+      console.log("🔍 Iniciando carregamento da página de resultados...");
       const idOrganizacao = localStorage.getItem("idorganizacao");
+      const token = localStorage.getItem("token");
+      
+      console.log("📊 Dados de autenticação:", {
+        idOrganizacao: idOrganizacao,
+        temToken: !!token,
+        apiUrl: process.env.NEXT_PUBLIC_API_URL
+      });
+      
       if (!idOrganizacao) {
-        console.warn("Organização não definida no localStorage");
+        console.warn("⚠️ Organização não definida no localStorage");
         return;
       }
 
+      console.log("🌐 Fazendo requisição para DRE...");
       const response = await api.get("/api/dre/por-nivel1-e-nivel2-e-nivel3", {
         params: {
           idorganizacao: Number(idOrganizacao),
@@ -75,6 +85,7 @@ useEffect(() => {
         },
       });
 
+      console.log("✅ Resposta recebida:", response.data);
       const lista: DREItem[] = response.data.data;
       const ordenado = [...lista].sort((a, b) => a.nivel1.localeCompare(b.nivel1));
       setDados(ordenado);
@@ -85,8 +96,16 @@ useEffect(() => {
       if (fat) setLinha1(fat);
       if (cmv) setLinha4(cmv);
       if (lucro) setLinha8(lucro);
-    } catch (error) {
-      console.error("Erro ao buscar dados:", error);
+    } catch (error: unknown) {
+      console.error("❌ Erro ao buscar dados da DRE:", error);
+      const axiosError = error as any;
+      if (axiosError?.response) {
+        console.error("📝 Detalhes do erro:", {
+          status: axiosError.response.status,
+          statusText: axiosError.response.statusText,
+          data: axiosError.response.data
+        });
+      }
     }
   }
 
@@ -325,7 +344,7 @@ useEffect(() => {
                         );
                       })}
 
-                    {nivel1 === "4.0 - CMV" && linha1 && linha4 && (
+                    {nivel1.startsWith("4.0") && linha1 && linha4 && (
                       <tr className="bg-gray-200 font-bold text-gray-400">
                         <td className="px-2 py-1">4.1 - MARGEM %</td>
                         {!isMobile && meses.map((m) => {

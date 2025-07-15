@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Layout from "@/components/Layout";
 import Chat from "@/components/Chat";
-import axios from "axios";
+import api from "@/lib/api";
+import { AxiosError } from "axios";
 import { Loader2, AlertTriangle, CreditCard, RefreshCw } from "lucide-react";
 
 // ✅ Mock para teste (substituir por dados reais em produção)
@@ -31,8 +32,8 @@ export default function AReceber() {
       setResumoIA(null);
       setErroIA(null);
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/openai/a-receber`,
+      const response = await api.post(
+        "/api/openai/a-receber",
         { dadosReceber: contasReceber }
       );
 
@@ -49,17 +50,20 @@ export default function AReceber() {
           mensagem: "Resposta inválida da IA."
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("🔴 Erro ao gerar resumo IA:", error);
       
       // Tratamento específico para diferentes tipos de erro
-      if (error?.response?.status === 400) {
-        const errorMessage = error?.response?.data?.erro || error?.response?.data?.message || "";
+      const axiosError = error as AxiosError;
+      if (axiosError?.response?.status === 400) {
+        const errorMessage = (axiosError?.response?.data as any)?.erro || (axiosError?.response?.data as any)?.message || "";
         
         if (errorMessage.includes("insufficient_quota") || 
             errorMessage.includes("quota") || 
             errorMessage.includes("credit") ||
-            errorMessage.includes("billing")) {
+            errorMessage.includes("billing") ||
+            errorMessage.includes("Créditos da IA esgotados") ||
+            (axiosError?.response?.data as any)?.message === "insufficient_quota") {
           setErroIA({
             tipo: "sem_creditos",
             mensagem: "Créditos da IA esgotados. Entre em contato com o suporte para renovar o plano."
@@ -70,12 +74,12 @@ export default function AReceber() {
             mensagem: "Erro de configuração da IA. Verifique as configurações do sistema."
           });
         }
-      } else if (error?.response?.status === 401) {
+      } else if (axiosError?.response?.status === 401) {
         setErroIA({
           tipo: "erro_autenticacao",
           mensagem: "Falha na autenticação com o serviço de IA."
         });
-      } else if (error?.response?.status === 429) {
+      } else if (axiosError?.response?.status === 429) {
         setErroIA({
           tipo: "limite_excedido",
           mensagem: "Limite de requisições excedido. Tente novamente em alguns minutos."
