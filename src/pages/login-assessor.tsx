@@ -24,7 +24,12 @@ export default function LoginAssessor() {
         setLoading(true);
         setError("");
         try {
+            console.log("Tentando fazer login com:", { assessor, senha });
+            console.log("URL da API:", process.env.NEXT_PUBLIC_API_URL);
+            
             const response = await api.post("/auth/login-assessor", { assessor, senha });
+            console.log("Resposta do login:", response.data);
+            
             const { token, assessor: nomeAssessor, idassessor, admin, organizacoes } = response.data;
 
             localStorage.setItem("token", token);
@@ -34,7 +39,13 @@ export default function LoginAssessor() {
             localStorage.setItem("organizacoes_assessor", JSON.stringify(organizacoes));
 
             setOrganizacoes(organizacoes);
-        } catch {
+        } catch (error: any) {
+            console.error("Erro no login:", error);
+            if (error.response) {
+                console.error("Status:", error.response.status);
+                console.error("Data:", error.response.data);
+                console.error("Headers:", error.response.headers);
+            }
             setError("Assessor ou senha inválidos.");
         } finally {
             setLoading(false);
