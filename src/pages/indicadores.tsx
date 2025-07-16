@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
-import { TrendingUp, TrendingDown, Target, DollarSign, ShoppingCart, Package, Calendar, AlertCircle, ChevronDown, ChevronUp, Gauge } from "lucide-react";
-import { useEffect, useState } from "react";
+import { TrendingUp, TrendingDown, Target, DollarSign, ShoppingCart, Package, Calendar, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
 import api from "@/lib/api";
 import Image from "next/image";
 
@@ -133,7 +133,7 @@ export default function Indicadores() {
     };
 
     // Buscar indicadores do backend
-    const fetchIndicadores = async () => {
+    const fetchIndicadores = useCallback(async () => {
         if (!diaSelecionado) return;
         
         try {
@@ -163,7 +163,7 @@ export default function Indicadores() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [diaSelecionado, empresaSelecionada]);
 
     useEffect(() => {
         fetchDiasDisponiveis();
@@ -172,7 +172,7 @@ export default function Indicadores() {
 
     useEffect(() => {
         fetchIndicadores();
-    }, [diaSelecionado, empresaSelecionada]);
+    }, [fetchIndicadores]);
 
     const getVariacaoColor = (variacao: number) => {
         if (variacao > 0) return "text-green-600";
@@ -289,7 +289,9 @@ export default function Indicadores() {
                                     <span className="px-2 text-xs font-semibold text-center min-w-[100px]">
                                         {diaSelecionado && diasDisponiveis.find(d => d.dia === diaSelecionado)?.datacriacao 
                                             ? (() => {
-                                                const data = new Date(diasDisponiveis.find(d => d.dia === diaSelecionado)?.datacriacao!);
+                                                const dataDisponivel = diasDisponiveis.find(d => d.dia === diaSelecionado);
+                                                if (!dataDisponivel?.datacriacao) return diaSelecionado || '-';
+                                                const data = new Date(dataDisponivel.datacriacao);
                                                 const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
                                                 const diaSemana = diasSemana[data.getDay()];
                                                 const dia = data.getDate().toString().padStart(2, '0');
@@ -400,7 +402,9 @@ export default function Indicadores() {
                                 <span className="px-2 text-xs font-semibold text-center min-w-[70px]">
                                     {diaSelecionado && diasDisponiveis.find(d => d.dia === diaSelecionado)?.datacriacao 
                                         ? (() => {
-                                            const data = new Date(diasDisponiveis.find(d => d.dia === diaSelecionado)?.datacriacao!);
+                                            const dataDisponivel = diasDisponiveis.find(d => d.dia === diaSelecionado);
+                                            if (!dataDisponivel?.datacriacao) return diaSelecionado || '-';
+                                            const data = new Date(dataDisponivel.datacriacao);
                                             const dia = data.getDate().toString().padStart(2, '0');
                                             const mes = (data.getMonth() + 1).toString().padStart(2, '0');
                                             return `${dia}/${mes}`;

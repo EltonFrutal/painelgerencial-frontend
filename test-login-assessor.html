@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Login Assessor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { border-color: #28a745; background-color: #d4edda; }
+        .error { border-color: #dc3545; background-color: #f8d7da; }
+        .warning { border-color: #ffc107; background-color: #fff3cd; }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Teste do Login do Assessor</h1>
+        
+        <div class="test-section">
+            <h3>📋 Verificação de Estado</h3>
+            <button onclick="verificarEstado()">Verificar Estado Atual</button>
+            <button onclick="limparEstado()">Limpar localStorage</button>
+            <div id="estado-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Teste de Login</h3>
+            <input type="text" id="assessor" placeholder="Nome do Assessor" value="Elton">
+            <input type="password" id="senha" placeholder="Senha" value="123456">
+            <br>
+            <button onclick="testarLogin()">Testar Login</button>
+            <div id="login-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🏢 Teste de Seleção de Organização</h3>
+            <select id="organizacao">
+                <option value="">Selecione uma organização</option>
+                <option value="1111">Organização 1111</option>
+            </select>
+            <br>
+            <button onclick="testarOrganizacao()">Confirmar Organização</button>
+            <div id="org-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Logs de Debug</h3>
+            <div id="debug-logs" class="result" style="max-height: 200px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('debug-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.createElement('div');
+            logElement.innerHTML = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            logElement.style.color = type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#007bff';
+            logs.appendChild(logElement);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function verificarEstado() {
+            const estado = {
+                token: localStorage.getItem('token'),
+                idorganizacao: localStorage.getItem('idorganizacao'),
+                nome: localStorage.getItem('nome'),
+                idassessor: localStorage.getItem('idassessor'),
+                admin: localStorage.getItem('admin'),
+                nome_organizacao: localStorage.getItem('nome_organizacao'),
+                organizacoes_assessor: localStorage.getItem('organizacoes_assessor')
+            };
+            
+            document.getElementById('estado-result').innerHTML = `
+                <h4>Estado atual do localStorage:</h4>
+                <pre>${JSON.stringify(estado, null, 2)}</pre>
+            `;
+            
+            log('Estado verificado', 'info');
+        }
+
+        function limparEstado() {
+            localStorage.clear();
+            document.getElementById('estado-result').innerHTML = '<span style="color: green;">✅ localStorage limpo!</span>';
+            log('localStorage limpo', 'success');
+        }
+
+        async function testarLogin() {
+            const assessor = document.getElementById('assessor').value;
+            const senha = document.getElementById('senha').value;
+            
+            if (!assessor || !senha) {
+                document.getElementById('login-result').innerHTML = '<span style="color: red;">❌ Preencha assessor e senha!</span>';
+                return;
+            }
+            
+            try {
+                log(`Tentando login com assessor: ${assessor}`, 'info');
+                
+                const response = await fetch(`${API_BASE}/auth/login-assessor`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ assessor, senha })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Simular o que faz a aplicação
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('nome', data.assessor);
+                    localStorage.setItem('idassessor', String(data.idassessor));
+                    localStorage.setItem('admin', data.admin ? 'true' : 'false');
+                    localStorage.setItem('organizacoes_assessor', JSON.stringify(data.organizacoes));
+                    
+                    document.getElementById('login-result').innerHTML = `
+                        <span style="color: green;">✅ Login bem-sucedido!</span>
+                        <h4>Dados recebidos:</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    
+                    // Preencher o select de organizações
+                    const select = document.getElementById('organizacao');
+                    select.innerHTML = '<option value="">Selecione uma organização</option>';
+                    data.organizacoes.forEach(org => {
+                        const option = document.createElement('option');
+                        option.value = org.idorganizacao;
+                        option.textContent = `${org.nomeorganizacao} (${org.idorganizacao})`;
+                        select.appendChild(option);
+                    });
+                    
+                    log('Login realizado com sucesso', 'success');
+                } else {
+                    document.getElementById('login-result').innerHTML = `
+                        <span style="color: red;">❌ Erro no login:</span>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    log(`Erro no login: ${data.message || 'Erro desconhecido'}`, 'error');
+                }
+            } catch (error) {
+                document.getElementById('login-result').innerHTML = `
+                    <span style="color: red;">❌ Erro de conexão:</span>
+                    <pre>${error.message}</pre>
+                `;
+                log(`Erro de conexão: ${error.message}`, 'error');
+            }
+        }
+
+        async function testarOrganizacao() {
+            const orgId = document.getElementById('organizacao').value;
+            
+            if (!orgId) {
+                document.getElementById('org-result').innerHTML = '<span style="color: red;">❌ Selecione uma organização!</span>';
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('org-result').innerHTML = '<span style="color: red;">❌ Faça login primeiro!</span>';
+                return;
+            }
+            
+            try {
+                log(`Definindo organização: ${orgId}`, 'info');
+                
+                const response = await fetch(`${API_BASE}/auth/assessor-set-org`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        idorganizacao: parseInt(orgId)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Simular o que faz a aplicação
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('idorganizacao', String(orgId));
+                    
+                    // Buscar nome da organização
+                    const organizacoes = JSON.parse(localStorage.getItem('organizacoes_assessor') || '[]');
+                    const orgSelecionada = organizacoes.find(org => org.idorganizacao === parseInt(orgId));
+                    if (orgSelecionada) {
+                        localStorage.setItem('nome_organizacao', orgSelecionada.nomeorganizacao);
+                    }
+                    
+                    document.getElementById('org-result').innerHTML = `
+                        <span style="color: green;">✅ Organização definida com sucesso!</span>
+                        <h4>Novo token:</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <p><strong>Pronto para redirecionar para /menu-principal</strong></p>
+                    `;
+                    
+                    log('Organização definida com sucesso', 'success');
+                } else {
+                    document.getElementById('org-result').innerHTML = `
+                        <span style="color: red;">❌ Erro ao definir organização:</span>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    log(`Erro ao definir organização: ${data.message || 'Erro desconhecido'}`, 'error');
+                }
+            } catch (error) {
+                document.getElementById('org-result').innerHTML = `
+                    <span style="color: red;">❌ Erro de conexão:</span>
+                    <pre>${error.message}</pre>
+                `;
+                log(`Erro de conexão: ${error.message}`, 'error');
+            }
+        }
+
+        // Verificar estado inicial
+        window.onload = function() {
+            verificarEstado();
+            log('Página de teste carregada', 'info');
+        };
+    </script>
+</body>
+</html>

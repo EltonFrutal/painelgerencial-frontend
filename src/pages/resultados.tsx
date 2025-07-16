@@ -98,7 +98,7 @@ useEffect(() => {
       if (lucro) setLinha8(lucro);
     } catch (error: unknown) {
       console.error("❌ Erro ao buscar dados da DRE:", error);
-      const axiosError = error as any;
+      const axiosError = error as { response?: { status: number; statusText: string; data: unknown } };
       if (axiosError?.response) {
         console.error("📝 Detalhes do erro:", {
           status: axiosError.response.status,
