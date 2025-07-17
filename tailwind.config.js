@@ -6,6 +6,9 @@ module.exports = {
   ],
   theme: {
   	extend: {
+  		fontFamily: {
+  			'bahnschrift': ['Bahnschrift', 'sans-serif'],
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

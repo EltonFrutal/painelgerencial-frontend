@@ -71,15 +71,15 @@ export default function Indicadores() {
     const getIconeByName = (nome: string): React.ReactNode => {
         const nomeUpper = nome.toUpperCase();
         
-        if (nomeUpper.includes('VENDA')) return <DollarSign className="w-6 h-6" />;
-        if (nomeUpper.includes('COMPRA')) return <ShoppingCart className="w-6 h-6" />;
-        if (nomeUpper.includes('MARGEM') || nomeUpper.includes('CMV')) return <TrendingUp className="w-6 h-6" />;
-        if (nomeUpper.includes('INADIMPL')) return <AlertCircle className="w-6 h-6" />;
-        if (nomeUpper.includes('PROJECAO')) return <Target className="w-6 h-6" />;
-        if (nomeUpper.includes('ANO')) return <Calendar className="w-6 h-6" />;
-        if (nomeUpper.includes('ESTOQUE')) return <Package className="w-6 h-6" />;
+        if (nomeUpper.includes('VENDA')) return <DollarSign className="w-4 h-4 md:w-4 md:h-4" />;
+        if (nomeUpper.includes('COMPRA')) return <ShoppingCart className="w-4 h-4 md:w-4 md:h-4" />;
+        if (nomeUpper.includes('MARGEM') || nomeUpper.includes('CMV')) return <TrendingUp className="w-4 h-4 md:w-4 md:h-4" />;
+        if (nomeUpper.includes('INADIMPL')) return <AlertCircle className="w-4 h-4 md:w-4 md:h-4" />;
+        if (nomeUpper.includes('PROJECAO')) return <Target className="w-4 h-4 md:w-4 md:h-4" />;
+        if (nomeUpper.includes('ANO')) return <Calendar className="w-4 h-4 md:w-4 md:h-4" />;
+        if (nomeUpper.includes('ESTOQUE')) return <Package className="w-4 h-4 md:w-4 md:h-4" />;
         
-        return <DollarSign className="w-6 h-6" />; // Padrão
+        return <DollarSign className="w-4 h-4 md:w-4 md:h-4" />; // Padrão
     };
 
     // Determinar unidade baseado no indicador
@@ -262,7 +262,7 @@ export default function Indicadores() {
 
     return (
         <Layout titulo="Painel Gerencial" subtitulo="Indicadores">
-            <div className="p-6 bg-gray-50 min-h-full">
+            <div className="p-1 md:p-6 bg-gray-50 min-h-full font-bahnschrift">
                 {/* Cabeçalho com ícone */}
                 <div className="mb-6">
                     {/* Layout completo em uma linha - Desktop */}
@@ -359,22 +359,46 @@ export default function Indicadores() {
                         </div>
 
                         {/* Resumo Geral alinhado à direita */}
-                        <div className="flex items-center gap-2">
-                            <div className="text-center px-3 py-1.5 bg-green-50 rounded-lg border border-green-200">
-                                <div className="text-lg font-bold text-green-600">
+                        <div className="flex items-center gap-4">
+                            <div className="text-center px-2 py-1 bg-green-50 rounded-lg border-2 border-green-400">
+                                <div className="text-sm font-medium text-green-600">
                                     {loading ? '0' : indicadores.filter(i => i.cor.toLowerCase() === 'verde' || i.cor.toLowerCase() === 'green').length}
                                 </div>
                                 <div className="text-xs text-green-700">Atingidos</div>
                             </div>
-                            <div className="text-center px-3 py-1.5 bg-yellow-50 rounded-lg border border-yellow-200">
-                                <div className="text-lg font-bold text-yellow-600">
+                            <div className="text-center px-2 py-1 bg-yellow-50 rounded-lg border-2 border-yellow-400">
+                                <div className="text-sm font-medium text-yellow-600">
                                     {loading ? '0' : indicadores.filter(i => i.cor.toLowerCase() === 'amarelo' || i.cor.toLowerCase() === 'yellow').length}
                                 </div>
                                 <div className="text-xs text-yellow-700">Próximos</div>
                             </div>
-                            <div className="text-center px-3 py-1.5 bg-red-50 rounded-lg border border-red-200">
-                                <div className="text-lg font-bold text-red-600">
+                            <div className="text-center px-2 py-1 bg-red-50 rounded-lg border-2 border-red-400">
+                                <div className="text-sm font-medium text-red-600">
                                     {loading ? '0' : indicadores.filter(i => i.cor.toLowerCase() === 'vermelho' || i.cor.toLowerCase() === 'red').length}
+                                </div>
+                                <div className="text-xs text-red-700">Abaixo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Cards de Resumo - Mobile (primeiro) */}
+                    <div className="mb-4 md:hidden">
+                        <div className="flex items-center justify-center gap-2">
+                            <div className="text-center px-2 py-1.5 bg-green-50 rounded-lg border-2 border-green-400 flex-1 max-w-[90px]">
+                                <div className="text-sm font-medium text-green-600">
+                                    {indicadores.filter(i => i.cor.toLowerCase() === 'verde' || i.cor.toLowerCase() === 'green').length}
+                                </div>
+                                <div className="text-xs text-green-700">Atingidos</div>
+                            </div>
+                            <div className="text-center px-2 py-1.5 bg-yellow-50 rounded-lg border-2 border-yellow-400 flex-1 max-w-[90px]">
+                                <div className="text-sm font-medium text-yellow-600">
+                                    {indicadores.filter(i => i.cor.toLowerCase() === 'amarelo' || i.cor.toLowerCase() === 'yellow').length}
+                                </div>
+                                <div className="text-xs text-yellow-700">Próximos</div>
+                            </div>
+                            <div className="text-center px-2 py-1.5 bg-red-50 rounded-lg border-2 border-red-400 flex-1 max-w-[90px]">
+                                <div className="text-sm font-medium text-red-600">
+                                    {indicadores.filter(i => i.cor.toLowerCase() === 'vermelho' || i.cor.toLowerCase() === 'red').length}
                                 </div>
                                 <div className="text-xs text-red-700">Abaixo</div>
                             </div>
@@ -486,41 +510,19 @@ export default function Indicadores() {
                     </div>
                 ) : (
                     <>
-                        {/* Resumo Geral - Mobile */}
-                        <div className="mb-6 md:hidden">
-                            <div className="flex items-center gap-2">
-                                <div className="text-center px-2 py-2 bg-green-50 rounded-lg border border-green-200 flex-1">
-                                    <div className="text-lg font-bold text-green-600">
-                                        {indicadores.filter(i => i.cor.toLowerCase() === 'verde' || i.cor.toLowerCase() === 'green').length}
-                                    </div>
-                                    <div className="text-xs text-green-700">Atingidos</div>
-                                </div>
-                                <div className="text-center px-2 py-2 bg-yellow-50 rounded-lg border border-yellow-200 flex-1">
-                                    <div className="text-lg font-bold text-yellow-600">
-                                        {indicadores.filter(i => i.cor.toLowerCase() === 'amarelo' || i.cor.toLowerCase() === 'yellow').length}
-                                    </div>
-                                    <div className="text-xs text-yellow-700">Próximos</div>
-                                </div>
-                                <div className="text-center px-2 py-2 bg-red-50 rounded-lg border border-red-200 flex-1">
-                                    <div className="text-lg font-bold text-red-600">
-                                        {indicadores.filter(i => i.cor.toLowerCase() === 'vermelho' || i.cor.toLowerCase() === 'red').length}
-                                    </div>
-                                    <div className="text-xs text-red-700">Abaixo</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                             {indicadores.map((indicador) => (
-                                <div 
+                                <div
                                     key={indicador.id}
-                                    className={`bg-white rounded-lg shadow-md p-3 border-l-4 ${getCardBorderColor(indicador.cor)} hover:shadow-lg transition-shadow duration-200`}
+                                    className={`bg-white rounded-lg shadow-md px-3 py-2 md:p-3 border-l-4 ${getCardBorderColor(indicador.cor)} hover:shadow-lg transition-shadow duration-200`}
                                 >
                                     {/* Header do Card */}
-                                    <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center justify-between mb-1 md:mb-2">
                                         <div className="flex items-center space-x-2">
-                                            <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600">
-                                                {indicador.icone}
+                                            <div className="p-1 md:p-1 border border-white rounded-full">
+                                                <div className="text-blue-600 text-lg md:text-xs">
+                                                    {indicador.icone}
+                                                </div>
                                             </div>
                                             <div>
                                                 <h3 className="text-[10px] md:text-sm font-medium text-gray-600">{indicador.nome}</h3>
@@ -529,8 +531,8 @@ export default function Indicadores() {
                                     </div>
 
                                     {/* Valores Principais */}
-                                    <div className="mb-2">
-                                        <div className="flex items-center justify-between mb-1">
+                                    <div className="mb-1 md:mb-2">
+                                        <div className="flex items-center justify-between mb-0.5 md:mb-1">
                                             <span 
                                                 className="text-sm md:text-xl font-bold text-gray-800"
                                                 dangerouslySetInnerHTML={{ __html: formatValue(indicador.realizado, indicador.unidade) }}
@@ -549,7 +551,7 @@ export default function Indicadores() {
                                         </div>
                                         
                                         {/* Ícone da variação e Meta na mesma linha para mobile */}
-                                        <div className="md:hidden flex items-center justify-between mb-1">
+                                        <div className="md:hidden flex items-center justify-between mb-0.5 md:mb-1">
                                             <div className="text-[10px] text-gray-500">
                                                 Meta: <span dangerouslySetInnerHTML={{ __html: formatValue(indicador.meta, indicador.unidade) }} />
                                             </div>

@@ -229,7 +229,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
                     </div>
                 </header>
 
-                <main className="flex-1 p-4 bg-gray-100">
+                <main className="flex-1 p-2 md:p-4 bg-gray-50 md:bg-gray-100">
                     {children}
                 </main>
             </div>

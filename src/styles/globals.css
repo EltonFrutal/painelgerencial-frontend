@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Importar fonte Bahnschrift do sistema */
+@font-face {
+  font-family: 'Bahnschrift';
+  src: local('Bahnschrift');
+  font-display: swap;
+}
+
 body {
   @apply bg-gray-100;
 }
