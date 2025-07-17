@@ -58,7 +58,7 @@ interface EmpresaDisponivel {
     nomeempresa: string;
 }
 
-export default function Indicadores2() {
+export default function Indicadores() {
     const [indicadores, setIndicadores] = useState<Indicador[]>([]);
     const [diasDisponiveis, setDiasDisponiveis] = useState<DiaDisponivel[]>([]);
     const [empresasDisponiveis, setEmpresasDisponiveis] = useState<EmpresaDisponivel[]>([]);
@@ -188,35 +188,20 @@ export default function Indicadores2() {
         return null;
     };
 
-    // Função para obter cores baseadas na cor do indicador
-    const getCardColors = (cor: string) => {
+    const getProgressColor = (cor: string) => {
         const corLower = cor.toLowerCase();
-        if (corLower === 'verde' || corLower === 'green') {
-            return {
-                bg: 'bg-green-500',
-                textLight: 'text-green-100',
-                textDark: 'text-green-800'
-            };
-        }
-        if (corLower === 'amarelo' || corLower === 'yellow') {
-            return {
-                bg: 'bg-yellow-500',
-                textLight: 'text-yellow-100',
-                textDark: 'text-yellow-800'
-            };
-        }
-        if (corLower === 'vermelho' || corLower === 'red') {
-            return {
-                bg: 'bg-red-500',
-                textLight: 'text-red-100',
-                textDark: 'text-red-800'
-            };
-        }
-        return {
-            bg: 'bg-blue-500',
-            textLight: 'text-blue-100',
-            textDark: 'text-blue-800'
-        };
+        if (corLower === 'verde' || corLower === 'green') return "bg-green-500";
+        if (corLower === 'amarelo' || corLower === 'yellow') return "bg-yellow-500";
+        if (corLower === 'vermelho' || corLower === 'red') return "bg-red-500";
+        return "bg-gray-500"; // Cor padrão
+    };
+
+    const getCardBorderColor = (cor: string) => {
+        const corLower = cor.toLowerCase();
+        if (corLower === 'verde' || corLower === 'green') return 'border-l-green-500';
+        if (corLower === 'amarelo' || corLower === 'yellow') return 'border-l-yellow-500';
+        if (corLower === 'vermelho' || corLower === 'red') return 'border-l-red-500';
+        return 'border-l-gray-500'; // Cor padrão
     };
 
     const formatNumberWithScale = (value: number): string => {
@@ -226,21 +211,21 @@ export default function Indicadores2() {
         if (absValue >= 1000000000) {
             // Bilhões
             const billions = absValue / 1000000000;
-            if (billions >= 100) return `${signal}${billions.toFixed(0)}B`;
-            if (billions >= 10) return `${signal}${billions.toFixed(1)}B`;
-            return `${signal}${billions.toFixed(2)}B`;
+            if (billions >= 100) return `${signal}${billions.toFixed(0)} <span style="font-size: 0.8em; color: #9ca3af;">B</span>`;
+            if (billions >= 10) return `${signal}${billions.toFixed(1)} <span style="font-size: 0.8em; color: #9ca3af;">B</span>`;
+            return `${signal}${billions.toFixed(2)} <span style="font-size: 0.8em; color: #9ca3af;">B</span>`;
         } else if (absValue >= 1000000) {
             // Milhões
             const millions = absValue / 1000000;
-            if (millions >= 100) return `${signal}${millions.toFixed(0)}M`;
-            if (millions >= 10) return `${signal}${millions.toFixed(1)}M`;
-            return `${signal}${millions.toFixed(2)}M`;
+            if (millions >= 100) return `${signal}${millions.toFixed(0)} <span style="font-size: 0.8em; color: #9ca3af;">M</span>`;
+            if (millions >= 10) return `${signal}${millions.toFixed(1)} <span style="font-size: 0.8em; color: #9ca3af;">M</span>`;
+            return `${signal}${millions.toFixed(2)} <span style="font-size: 0.8em; color: #9ca3af;">M</span>`;
         } else if (absValue >= 1000) {
             // Milhares
             const thousands = absValue / 1000;
-            if (thousands >= 100) return `${signal}${thousands.toFixed(0)}K`;
-            if (thousands >= 10) return `${signal}${thousands.toFixed(1)}K`;
-            return `${signal}${thousands.toFixed(2)}K`;
+            if (thousands >= 100) return `${signal}${thousands.toFixed(0)} <span style="font-size: 0.8em; color: #9ca3af;">K</span>`;
+            if (thousands >= 10) return `${signal}${thousands.toFixed(1)} <span style="font-size: 0.8em; color: #9ca3af;">K</span>`;
+            return `${signal}${thousands.toFixed(2)} <span style="font-size: 0.8em; color: #9ca3af;">K</span>`;
         } else {
             // Valores menores que 1000
             return `${signal}${absValue.toFixed(0)}`;
@@ -271,9 +256,13 @@ export default function Indicadores2() {
         return `${signal}${percentage.toFixed(1)}%`;
     };
 
+    const calculateProgress = (realizado: number, meta: number) => {
+        return Math.min((realizado / meta) * 100, 100);
+    };
+
     return (
-                <Layout titulo="Painel Gerencial" subtitulo="Indicadores 2 - Teste">
-            <div className="p-6 bg-gray-50 min-h-full" style={{ fontFamily: 'Bahnschrift, sans-serif' }}>
+        <Layout titulo="Painel Gerencial" subtitulo="Indicadores">
+            <div className="p-6 bg-gray-50 min-h-full">
                 {/* Cabeçalho com ícone */}
                 <div className="mb-6">
                     {/* Layout completo em uma linha - Desktop */}
@@ -284,7 +273,7 @@ export default function Indicadores2() {
                             
                             {/* Dia */}
                             <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-700">Dia:</span>
+                                <span className="text-xs font-medium text-gray-700">Dia:</span>
                                 <div className="flex items-center border border-gray-300 rounded px-2">
                                     <button
                                         onClick={() => {
@@ -299,7 +288,7 @@ export default function Indicadores2() {
                                     >
                                         <ChevronDown size={14} />
                                     </button>
-                                    <span className="px-2 text-xs text-center min-w-[100px]">
+                                    <span className="px-2 text-xs font-semibold text-center min-w-[100px]">
                                         {diaSelecionado && diasDisponiveis.find(d => d.dia === diaSelecionado)?.datacriacao 
                                             ? (() => {
                                                 const dataDisponivel = diasDisponiveis.find(d => d.dia === diaSelecionado);
@@ -332,59 +321,59 @@ export default function Indicadores2() {
                                 </div>
                             </div>
 
-                            {/* Empresa */}
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-700">Empresa:</span>
-                                <div className="flex items-center border border-gray-300 rounded px-2">
-                                    <button
-                                        onClick={() => {
-                                            const currentIndex = empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada);
-                                            if (currentIndex > 0) {
-                                                setEmpresaSelecionada(empresasDisponiveis[currentIndex - 1].idempresa);
-                                            }
-                                        }}
-                                        disabled={empresasDisponiveis.length === 0 || empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada) <= 0}
-                                        className="p-1 text-gray-600 hover:text-black disabled:text-gray-300 disabled:cursor-not-allowed"
-                                        title={empresasDisponiveis.length === 0 || empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada) <= 0 ? 'Você já está na primeira empresa' : 'Empresa anterior'}
-                                    >
-                                        <ChevronDown size={14} />
-                                    </button>
-                                    <span className="px-2 text-xs text-center min-w-[100px]">
-                                        {empresasDisponiveis.find(e => e.idempresa === empresaSelecionada)?.nomeempresa || 'MULTICAR'}
-                                    </span>
-                                    <button
-                                        onClick={() => {
-                                            const currentIndex = empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada);
-                                            if (currentIndex >= 0 && currentIndex < empresasDisponiveis.length - 1) {
-                                                setEmpresaSelecionada(empresasDisponiveis[currentIndex + 1].idempresa);
-                                            }
-                                        }}
-                                        disabled={empresasDisponiveis.length === 0 || empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada) >= empresasDisponiveis.length - 1}
-                                        className="p-1 text-gray-600 hover:text-black disabled:text-gray-300 disabled:cursor-not-allowed"
-                                        title={empresasDisponiveis.length === 0 || empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada) >= empresasDisponiveis.length - 1 ? 'Você já está na última empresa' : 'Próxima empresa'}
-                                    >
-                                        <ChevronUp size={14} />
-                                    </button>
+                                {/* Empresa */}
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-medium text-gray-700">Empresa:</span>
+                                    <div className="flex items-center border border-gray-300 rounded px-2">
+                                        <button
+                                            onClick={() => {
+                                                const currentIndex = empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada);
+                                                if (currentIndex > 0) {
+                                                    setEmpresaSelecionada(empresasDisponiveis[currentIndex - 1].idempresa);
+                                                }
+                                            }}
+                                            disabled={empresasDisponiveis.length === 0 || empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada) <= 0}
+                                            className="p-1 text-gray-600 hover:text-black disabled:text-gray-300 disabled:cursor-not-allowed"
+                                            title={empresasDisponiveis.length === 0 || empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada) <= 0 ? 'Você já está na primeira empresa' : 'Empresa anterior'}
+                                        >
+                                            <ChevronDown size={14} />
+                                        </button>
+                                        <span className="px-2 text-xs font-semibold text-center min-w-[100px]">
+                                            {empresasDisponiveis.find(e => e.idempresa === empresaSelecionada)?.nomeempresa || 'MULTICAR'}
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                const currentIndex = empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada);
+                                                if (currentIndex >= 0 && currentIndex < empresasDisponiveis.length - 1) {
+                                                    setEmpresaSelecionada(empresasDisponiveis[currentIndex + 1].idempresa);
+                                                }
+                                            }}
+                                            disabled={empresasDisponiveis.length === 0 || empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada) >= empresasDisponiveis.length - 1}
+                                            className="p-1 text-gray-600 hover:text-black disabled:text-gray-300 disabled:cursor-not-allowed"
+                                            title={empresasDisponiveis.length === 0 || empresasDisponiveis.findIndex(e => e.idempresa === empresaSelecionada) >= empresasDisponiveis.length - 1 ? 'Você já está na última empresa' : 'Próxima empresa'}
+                                        >
+                                            <ChevronUp size={14} />
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                         </div>
 
                         {/* Resumo Geral alinhado à direita */}
                         <div className="flex items-center gap-2">
                             <div className="text-center px-3 py-1.5 bg-green-50 rounded-lg border border-green-200">
-                                <div className="text-lg text-green-600">
+                                <div className="text-lg font-bold text-green-600">
                                     {loading ? '0' : indicadores.filter(i => i.cor.toLowerCase() === 'verde' || i.cor.toLowerCase() === 'green').length}
                                 </div>
                                 <div className="text-xs text-green-700">Atingidos</div>
                             </div>
                             <div className="text-center px-3 py-1.5 bg-yellow-50 rounded-lg border border-yellow-200">
-                                <div className="text-lg text-yellow-600">
+                                <div className="text-lg font-bold text-yellow-600">
                                     {loading ? '0' : indicadores.filter(i => i.cor.toLowerCase() === 'amarelo' || i.cor.toLowerCase() === 'yellow').length}
                                 </div>
                                 <div className="text-xs text-yellow-700">Próximos</div>
                             </div>
                             <div className="text-center px-3 py-1.5 bg-red-50 rounded-lg border border-red-200">
-                                <div className="text-lg text-red-600">
+                                <div className="text-lg font-bold text-red-600">
                                     {loading ? '0' : indicadores.filter(i => i.cor.toLowerCase() === 'vermelho' || i.cor.toLowerCase() === 'red').length}
                                 </div>
                                 <div className="text-xs text-red-700">Abaixo</div>
@@ -412,7 +401,7 @@ export default function Indicadores2() {
                                 >
                                     <ChevronDown size={12} />
                                 </button>
-                                <span className="px-2 text-xs text-center min-w-[70px]">
+                                <span className="px-2 text-xs font-semibold text-center min-w-[70px]">
                                     {diaSelecionado && diasDisponiveis.find(d => d.dia === diaSelecionado)?.datacriacao 
                                         ? (() => {
                                             const dataDisponivel = diasDisponiveis.find(d => d.dia === diaSelecionado);
@@ -456,7 +445,7 @@ export default function Indicadores2() {
                                 >
                                     <ChevronDown size={12} />
                                 </button>
-                                <span className="px-2 text-xs text-center min-w-[70px]">
+                                <span className="px-2 text-xs font-semibold text-center min-w-[70px]">
                                     {empresasDisponiveis.find(e => e.idempresa === empresaSelecionada)?.nomeempresa || 'MULTICAR'}
                                 </span>
                                 <button
@@ -501,19 +490,19 @@ export default function Indicadores2() {
                         <div className="mb-6 md:hidden">
                             <div className="flex items-center gap-2">
                                 <div className="text-center px-2 py-2 bg-green-50 rounded-lg border border-green-200 flex-1">
-                                    <div className="text-lg text-green-600">
+                                    <div className="text-lg font-bold text-green-600">
                                         {indicadores.filter(i => i.cor.toLowerCase() === 'verde' || i.cor.toLowerCase() === 'green').length}
                                     </div>
                                     <div className="text-xs text-green-700">Atingidos</div>
                                 </div>
                                 <div className="text-center px-2 py-2 bg-yellow-50 rounded-lg border border-yellow-200 flex-1">
-                                    <div className="text-lg text-yellow-600">
+                                    <div className="text-lg font-bold text-yellow-600">
                                         {indicadores.filter(i => i.cor.toLowerCase() === 'amarelo' || i.cor.toLowerCase() === 'yellow').length}
                                     </div>
                                     <div className="text-xs text-yellow-700">Próximos</div>
                                 </div>
                                 <div className="text-center px-2 py-2 bg-red-50 rounded-lg border border-red-200 flex-1">
-                                    <div className="text-lg text-red-600">
+                                    <div className="text-lg font-bold text-red-600">
                                         {indicadores.filter(i => i.cor.toLowerCase() === 'vermelho' || i.cor.toLowerCase() === 'red').length}
                                     </div>
                                     <div className="text-xs text-red-700">Abaixo</div>
@@ -521,59 +510,91 @@ export default function Indicadores2() {
                             </div>
                         </div>
 
-                        {/* Novo Layout dos Indicadores - Modelo da Imagem */}
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
-                            {indicadores.map((indicador) => {
-                                const colors = getCardColors(indicador.cor);
-                                
-                                return (
-                                    <div 
-                                        key={indicador.id}
-                                        className={`${colors.bg} rounded-lg shadow-lg p-4 text-white hover:shadow-xl transition-shadow duration-200`}
-                                    >
-                                        {/* Valor Principal Grande */}
-                                        <div className="mb-3">
-                                            <div className={`flex items-center justify-between text-2xl md:text-3xl ${colors.textLight} mb-1`}>
-                                                <span>{formatValue(indicador.realizado, indicador.unidade)}</span>
-                                                <div className={`p-1 rounded-full ${colors.textLight} opacity-80`}>
-                                                    {indicador.icone}
-                                                </div>
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {indicadores.map((indicador) => (
+                                <div 
+                                    key={indicador.id}
+                                    className={`bg-white rounded-lg shadow-md p-3 border-l-4 ${getCardBorderColor(indicador.cor)} hover:shadow-lg transition-shadow duration-200`}
+                                >
+                                    {/* Header do Card */}
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center space-x-2">
+                                            <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600">
+                                                {indicador.icone}
                                             </div>
-                                            <div className={`flex items-center justify-between text-xs ${colors.textLight} opacity-90`}>
-                                                <span>Meta: {formatValue(indicador.meta, indicador.unidade)}</span>
-                                                <div className={`flex items-center space-x-1 ${colors.textLight}`}>
+                                            <div>
+                                                <h3 className="text-[10px] md:text-sm font-medium text-gray-600">{indicador.nome}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Valores Principais */}
+                                    <div className="mb-2">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span 
+                                                className="text-sm md:text-xl font-bold text-gray-800"
+                                                dangerouslySetInnerHTML={{ __html: formatValue(indicador.realizado, indicador.unidade) }}
+                                            />
+                                            <div className="flex items-center">
+                                                <span className={`md:hidden text-[10px] font-medium ${getVariacaoColor(indicador.variacao)}`}>
+                                                    {formatVariacao(indicador.variacao)}
+                                                </span>
+                                                <div className={`hidden md:flex items-center space-x-1 ${getVariacaoColor(indicador.variacao)}`}>
                                                     {getVariacaoIcon(indicador.variacao)}
-                                                    <span className="text-xs">
+                                                    <span className="text-[10px] md:text-sm font-medium">
                                                         {formatVariacao(indicador.variacao)}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {/* Nome do Indicador */}
-                                        <div className="mb-3">
-                                            <h3 className={`text-xs ${colors.textLight} truncate`}>
-                                                {indicador.nome}
-                                            </h3>
-                                        </div>
-
-                                        {/* Barra de Progresso com Percentual */}
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex-1 bg-white bg-opacity-30 rounded-full h-2">
-                                                <div 
-                                                    className="h-2 bg-white rounded-full transition-all duration-300"
-                                                    style={{ 
-                                                        width: `${Math.min((indicador.realizado / indicador.meta) * 100, 100)}%` 
-                                                    }}
-                                                ></div>
+                                        
+                                        {/* Ícone da variação e Meta na mesma linha para mobile */}
+                                        <div className="md:hidden flex items-center justify-between mb-1">
+                                            <div className="text-[10px] text-gray-500">
+                                                Meta: <span dangerouslySetInnerHTML={{ __html: formatValue(indicador.meta, indicador.unidade) }} />
                                             </div>
-                                            <span className={`text-xs ${colors.textLight} opacity-90 min-w-[35px] text-right`}>
-                                                {Math.round(Math.min((indicador.realizado / indicador.meta) * 100, 100))}%
+                                            <div className={`flex items-center ${getVariacaoColor(indicador.variacao)}`}>
+                                                {getVariacaoIcon(indicador.variacao)}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="hidden md:flex justify-between items-center mb-1">
+                                            <div className="text-[10px] md:text-sm text-gray-500">
+                                                Meta: <span dangerouslySetInnerHTML={{ __html: formatValue(indicador.meta, indicador.unidade) }} />
+                                            </div>
+                                            <span className={`px-1 py-0.5 text-[9px] md:text-xs font-medium rounded-full ${
+                                                indicador.cor.toLowerCase() === 'verde' || indicador.cor.toLowerCase() === 'green'
+                                                    ? 'bg-green-100 text-green-800' 
+                                                    : indicador.cor.toLowerCase() === 'amarelo' || indicador.cor.toLowerCase() === 'yellow'
+                                                        ? 'bg-yellow-100 text-yellow-800'
+                                                        : 'bg-red-100 text-red-800'
+                                            }`}>
+                                                {indicador.cor.toLowerCase() === 'verde' || indicador.cor.toLowerCase() === 'green' ? 'Meta Atingida' : 
+                                                 indicador.cor.toLowerCase() === 'amarelo' || indicador.cor.toLowerCase() === 'yellow' ? 'Próximo da Meta' : 'Abaixo da Meta'}
                                             </span>
                                         </div>
+
+                                        {/* Barra de Progress */}
+                                        <div className="w-full bg-gray-200 rounded-full h-4 md:h-5 relative">
+                                            <div 
+                                                className={`h-4 md:h-5 rounded-full transition-all duration-300 ${getProgressColor(indicador.cor)}`}
+                                                style={{ width: `${calculateProgress(indicador.realizado, indicador.meta)}%` }}
+                                            ></div>
+                                            <div 
+                                                className="absolute inset-y-0 flex items-center transition-all duration-300"
+                                                style={{ 
+                                                    left: `${Math.max(calculateProgress(indicador.realizado, indicador.meta) - 12, 2)}%`,
+                                                    transform: calculateProgress(indicador.realizado, indicador.meta) < 20 ? 'translateX(0)' : 'translateX(-50%)'
+                                                }}
+                                            >
+                                                <span className={`text-[8px] md:text-xs font-medium ${calculateProgress(indicador.realizado, indicador.meta) > 0 ? 'text-white' : 'text-gray-500'}`}>
+                                                    {Math.round(calculateProgress(indicador.realizado, indicador.meta))}%
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                );
-                            })}
+                                </div>
+                            ))}
                         </div>
                     </>
                 )}
