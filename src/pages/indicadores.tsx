@@ -537,7 +537,7 @@ export default function Indicadores2() {
                                 return (
                                     <div 
                                         key={indicador.id}
-                                        className={`${colors.bg} rounded-lg shadow-lg px-3 py-2 md:p-4 text-white hover:shadow-xl transition-shadow duration-200`}
+                                        className={`${colors.bg} rounded-lg shadow-lg px-3 py-2 md:p-4 text-white hover:shadow-xl transition-shadow duration-200 font-bold md:font-bahnschrift`}
                                     >
                                         {/* Valor Principal Grande */}
                                         <div className="mb-1 md:mb-3">
