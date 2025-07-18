@@ -7,7 +7,7 @@ module.exports = {
   theme: {
   	extend: {
   		fontFamily: {
-  			'bahnschrift': ['Bahnschrift', 'sans-serif'],
+  			'bahnschrift': ['Inter', 'Bahnschrift', 'system-ui', 'sans-serif'],
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
