@@ -124,7 +124,7 @@ export default function Layout({ titulo, subtitulo, children }: LayoutProps) {
 
                         {/* Logo, Título e Subtítulo */}
                         <div className="flex flex-1 justify-center md:justify-start items-center gap-4">
-                            <Image src="/images/Logo.png" alt="Logo" width={40} height={40} className="w-10 h-10" />
+                            <Image src="/images/Logo.png" alt="Logo" width={40} height={40} className="w-7 h-7 md:w-10 md:h-10" />
                             <div className="hidden md:flex flex-col items-start">
                                 <h1 className="text-xl font-bold text-blue-900">{titulo}</h1>
                                 {subtitulo && <h2 className="text-sm text-gray-500">{subtitulo}</h2>}
